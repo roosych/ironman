@@ -21,9 +21,11 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'email_verified_at' => $this->email_verified_at?->toISOString(),
-            'is_email_verified' => $this->hasVerifiedEmail(),
-            'created_at' => $this->created_at->toISOString(),
+            'verified' => $this->hasVerifiedEmail(),
+            'profile' => $this->when(
+                $this->relationLoaded('profile'),
+                fn () => $this->profile ? UserProfileResource::make($this->profile) : null
+            ),
         ];
     }
 }
