@@ -25,16 +25,16 @@ class ProfileController extends Controller
     ) {}
 
     /**
-     * Get current user profile with photos and avatar.
+     * Get current user profile with photos.
      */
     public function show(Request $request): JsonResponse
     {
         $user = $request->user();
-        // Загружаем профиль и связи пользователя (photos, avatar)
-        $user->load(['profile', 'photos', 'avatar']);
+        // Загружаем профиль и фото пользователя
+        $user->load(['profile', 'photos']);
         
         // Устанавливаем user для profile с загруженными связями
-        // Это нужно для UserProfileResource, который обращается к $this->user->photos и $this->user->avatar
+        // Это нужно для UserProfileResource, который обращается к $this->user->photos
         if ($user->profile) {
             $user->profile->setRelation('user', $user);
         }
@@ -51,6 +51,10 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         $profile = $this->profileService->updateProfile($user, $request->safe()->all());
+        
+        // Загружаем фото для отображения в ответе
+        $user->load('photos');
+        $profile->setRelation('user', $user);
 
         return $this->successResponse([
             'data' => [
@@ -108,7 +112,7 @@ class ProfileController extends Controller
 
         return $this->successResponse([
             'data' => [
-                'avatar' => UserPhotoResource::make($photo),
+                'photo' => UserPhotoResource::make($photo),
             ],
         ]);
     }

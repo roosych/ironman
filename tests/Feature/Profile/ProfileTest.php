@@ -57,7 +57,7 @@ class ProfileTest extends TestCase
         if ($profile !== null) {
             $response->assertJsonStructure([
                 'data' => [
-                    'profile' => ['role', 'ironman_number', 'bio', 'social_links', 'avatar', 'photos'],
+                    'profile' => ['role', 'ironman_number', 'bio', 'social_links', 'photos'],
                 ],
             ]);
         }
@@ -370,7 +370,7 @@ class ProfileTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.avatar.is_avatar', true);
+            ->assertJsonPath('data.photo.is_avatar', true);
 
         $this->assertDatabaseHas('user_photos', [
             'id' => $photo->id,

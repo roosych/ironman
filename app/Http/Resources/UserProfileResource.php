@@ -28,11 +28,6 @@ class UserProfileResource extends JsonResource
                 'instagram' => null,
                 'facebook' => null,
             ],
-            'avatar' => $this->when(
-                $user && $user->relationLoaded('avatar'),
-                fn () => $user->avatar ? UserPhotoResource::make($user->avatar) : null,
-                null
-            ),
             'photos' => $this->when(
                 $user && $user->relationLoaded('photos'),
                 fn () => UserPhotoResource::collection($user->photos),
