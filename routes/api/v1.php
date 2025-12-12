@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\User\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,7 +18,6 @@ Route::prefix('auth')->group(function (): void {
     Route::post('/login', [AuthController::class, 'login'])->name('v1.auth.login');
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('v1.auth.forgot-password');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('v1.auth.reset-password');
-    // Note: Email verification moved to web.php as it's a web route (link from email)
 });
 
 // Protected authentication routes
@@ -28,7 +28,15 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function (): void {
         ->name('v1.auth.resend-verification');
 });
 
-// только верифицированным пользователям
-// Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    
-// });
+// Protected user routes
+Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show'])->name('v1.user.profile.show');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('v1.user.profile.update');
+    Route::post('/profile/avatar', [ProfileController::class, 'setAvatar'])->name('v1.user.profile.avatar.set');
+
+    // Photos
+    Route::get('/photos', [ProfileController::class, 'getPhotos'])->name('v1.user.photos.index');
+    Route::post('/photos', [ProfileController::class, 'uploadPhotos'])->name('v1.user.photos.upload');
+    Route::delete('/photos/{photoId}', [ProfileController::class, 'deletePhoto'])->name('v1.user.photos.delete');
+});

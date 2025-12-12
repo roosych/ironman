@@ -28,7 +28,7 @@ class LoginTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [
-                    'user' => ['id', 'name', 'email', 'email_verified_at', 'created_at'],
+                    'user' => ['id', 'name', 'email', 'verified'],
                     'token',
                 ],
             ])
@@ -107,7 +107,7 @@ class LoginTest extends TestCase
         $response->assertOk()
             ->assertJsonStructure([
                 'success',
-                'data' => ['id', 'name', 'email', 'email_verified_at', 'created_at'],
+                'data' => ['id', 'name', 'email', 'verified'],
             ])
             ->assertJsonPath('data.id', $user->id);
     }

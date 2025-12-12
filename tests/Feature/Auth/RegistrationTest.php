@@ -29,7 +29,7 @@ class RegistrationTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [
-                    'user' => ['id', 'name', 'email', 'email_verified_at', 'created_at'],
+                    'user' => ['id', 'name', 'email', 'verified'],
                     'token',
                 ],
             ])
