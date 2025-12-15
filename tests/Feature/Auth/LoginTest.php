@@ -148,13 +148,13 @@ class LoginTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonPath('email_not_verified', true)
+            ->assertJsonPath('data.user.verified', false)
             ->assertJsonStructure(['message', 'data' => ['user', 'token']]);
     }
 
     public function test_verified_user_login_has_no_warning_message(): void
     {
-        $user = User::factory()->create([
+        User::factory()->create([
             'email' => 'test@example.com',
             'password' => 'password123',
         ]);
@@ -166,6 +166,7 @@ class LoginTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonMissing(['email_not_verified' => true]);
+            ->assertJsonPath('data.user.verified', true)
+            ->assertJsonMissing(['message']);
     }
 }
