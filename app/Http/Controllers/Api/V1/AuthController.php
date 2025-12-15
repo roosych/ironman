@@ -39,6 +39,9 @@ class AuthController extends Controller
 
         $user->notify(new VerifyEmailNotification());
 
+        // Загружаем relations для консистентности ответа (будут null/empty для нового пользователя)
+        $user->load(['profile', 'photos']);
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return $this->successResponse([
@@ -60,6 +63,7 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
+        $user->load(['profile', 'photos']);
 
         // Remove all previous tokens
         $user->tokens()->delete();
@@ -99,8 +103,11 @@ class AuthController extends Controller
     /** Get authenticated user */
     public function user(Request $request): JsonResponse
     {
+        $user = $request->user();
+        $user->load(['profile', 'photos']);
+
         return $this->successResponse([
-            'data' => UserResource::make($request->user())
+            'data' => UserResource::make($user)
         ]);
     }
 
