@@ -65,4 +65,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(UserPhoto::class)->where('is_avatar', true);
     }
+
+    public function raceResults(): HasMany
+    {
+        return $this->hasMany(RaceResult::class);
+    }
 }

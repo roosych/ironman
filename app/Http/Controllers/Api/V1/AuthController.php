@@ -89,13 +89,11 @@ class AuthController extends Controller
             'data' => [
                 'user' => UserResource::make($user),
                 'token' => $token,
-            ]
+            ],
         ];
 
-        // Если email не подтвержден, добавляем информацию об этом
         if (!$user->hasVerifiedEmail()) {
             $responseData['message'] = 'Ваш email не подтверждён. Пожалуйста, проверьте почту или запросите новое письмо для подтверждения.';
-            $responseData['email_not_verified'] = true;
         }
 
         return $this->successResponse($responseData);

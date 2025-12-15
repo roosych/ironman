@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\RaceResultController;
 use App\Http\Controllers\Api\V1\User\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,4 +40,16 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
     Route::get('/photos', [ProfileController::class, 'getPhotos'])->name('v1.user.photos.index');
     Route::post('/photos', [ProfileController::class, 'uploadPhotos'])->name('v1.user.photos.upload');
     Route::delete('/photos/{photoId}', [ProfileController::class, 'deletePhoto'])->name('v1.user.photos.delete');
+});
+
+// Public race results routes
+Route::get('/race-results', [RaceResultController::class, 'index'])->name('v1.race-results.index');
+Route::get('/race-results/{raceResult}', [RaceResultController::class, 'show'])->name('v1.race-results.show');
+Route::get('/users/{user}/race-results', [RaceResultController::class, 'userResults'])->name('v1.users.race-results');
+
+// Protected race results routes
+Route::middleware('auth:sanctum')->group(function (): void {
+    Route::post('/race-results', [RaceResultController::class, 'store'])->name('v1.race-results.store');
+    Route::put('/race-results/{raceResult}', [RaceResultController::class, 'update'])->name('v1.race-results.update');
+    Route::delete('/race-results/{raceResult}', [RaceResultController::class, 'destroy'])->name('v1.race-results.destroy');
 });
