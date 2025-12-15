@@ -26,6 +26,21 @@ class AuthController extends Controller
 {
     use ApiResponse;
 
+    /**
+     * Load user with profile and photos, setting up proper relations.
+     */
+    private function loadUserWithProfile(User $user): User
+    {
+        $user->load(['profile', 'photos']);
+
+        // Устанавливаем user для profile, чтобы UserProfileResource мог получить photos
+        if ($user->profile) {
+            $user->profile->setRelation('user', $user);
+        }
+
+        return $user;
+    }
+
     /** Register a new user */
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -40,7 +55,7 @@ class AuthController extends Controller
         $user->notify(new VerifyEmailNotification());
 
         // Загружаем relations для консистентности ответа (будут null/empty для нового пользователя)
-        $user->load(['profile', 'photos']);
+        $this->loadUserWithProfile($user);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -63,7 +78,7 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
-        $user->load(['profile', 'photos']);
+        $this->loadUserWithProfile($user);
 
         // Remove all previous tokens
         $user->tokens()->delete();
@@ -104,7 +119,7 @@ class AuthController extends Controller
     public function user(Request $request): JsonResponse
     {
         $user = $request->user();
-        $user->load(['profile', 'photos']);
+        $this->loadUserWithProfile($user);
 
         return $this->successResponse([
             'data' => UserResource::make($user)
