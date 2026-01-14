@@ -30,12 +30,14 @@ class ProfileController extends Controller
     public function show(Request $request): JsonResponse
     {
         $user = $request->user();
-        // Загружаем профиль и фото пользователя
+        // Загружаем профиль, фото пользователя и результаты гонок
         $user->load(['profile', 'photos']);
-        
-        // Устанавливаем user для profile с загруженными связями
-        // Это нужно для UserProfileResource, который обращается к $this->user->photos
+
+        // Загружаем результаты гонок для профиля, если он существует
         if ($user->profile) {
+            $user->profile->load(['raceResults' => function ($query) {
+                $query->orderByDesc('race_date');
+            }]);
             $user->profile->setRelation('user', $user);
         }
 
@@ -51,7 +53,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         $profile = $this->profileService->updateProfile($user, $request->safe()->all());
-        
+
         // Загружаем фото для отображения в ответе
         $user->load('photos');
         $profile->setRelation('user', $user);
@@ -127,7 +129,7 @@ class ProfileController extends Controller
         // Check if photo belongs to user
         $photo = $user->photos()->find($photoId);
 
-        if (!$photo) {
+        if (! $photo) {
             return $this->errorResponse([
                 'photo_id' => ['Фотография не найдена или не принадлежит вам.'],
             ], 404);
@@ -137,6 +139,29 @@ class ProfileController extends Controller
 
         return $this->successResponse([
             'message' => 'Фотография успешно удалена.',
+        ]);
+    }
+
+    /**
+     * Request synchronization of race results.
+     * User requests admin to link existing profile with results.
+     */
+    public function requestSync(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        // Проверка: у пользователя должен быть профиль
+        if (! $user->profile) {
+            return $this->errorResponse([
+                'profile' => ['Профиль не найден.'],
+            ], 404);
+        }
+
+        // Отмечаем запрос на синхронизацию
+        $user->profile->update(['sync_requested' => true]);
+
+        return $this->successResponse([
+            'message' => 'Запрос на синхронизацию результатов отправлен администратору. Мы свяжемся с вами в ближайшее время.',
         ]);
     }
 }

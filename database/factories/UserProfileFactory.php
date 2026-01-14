@@ -22,8 +22,9 @@ class UserProfileFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
+            'admin_full_name' => $this->faker->name(),
             'role' => $this->faker->randomElement(['athlete', 'coach', 'admin']),
-            'ironman_number' => $this->faker->optional()->bothify('IM#####'),
+            'ironman_number' => $this->faker->optional()->numberBetween(1, 10000),
             'bio' => $this->faker->optional()->sentence(),
             'social_links' => [
                 'strava' => $this->faker->optional()->url(),
@@ -31,6 +32,16 @@ class UserProfileFactory extends Factory
                 'facebook' => $this->faker->optional()->url(),
             ],
         ];
+    }
+
+    /**
+     * Create a profile without a linked user (data-first architecture).
+     */
+    public function withoutUser(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'user_id' => null,
+        ]);
     }
 
     public function athlete(): static

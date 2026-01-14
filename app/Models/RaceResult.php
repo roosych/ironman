@@ -14,7 +14,7 @@ class RaceResult extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'user_profile_id',
         'race_date',
         'location',
         'race_type',
@@ -42,9 +42,9 @@ class RaceResult extends Model
         'age_group_position' => 'integer',
     ];
 
-    public function user(): BelongsTo
+    public function profile(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(UserProfile::class, 'user_profile_id');
     }
 
     public static function formatTime(int $seconds): string

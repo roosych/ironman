@@ -19,14 +19,15 @@ class MailServiceProvider extends ServiceProvider
     {
         if (config('mail.mailers.smtp.verify_peer') === false) {
             $this->app->singleton(MailManager::class, function ($app) {
-                return new class($app) extends MailManager {
+                return new class($app) extends MailManager
+                {
                     protected function createSmtpTransport(array $config)
                     {
-                        $factory = new EsmtpTransportFactory();
+                        $factory = new EsmtpTransportFactory;
 
                         $scheme = $config['scheme'] ?? null;
-                        if (!$scheme) {
-                            $scheme = !empty($config['encryption']) && $config['encryption'] === 'tls'
+                        if (! $scheme) {
+                            $scheme = ! empty($config['encryption']) && $config['encryption'] === 'tls'
                                 ? (($config['port'] ?? 465) == 465 ? 'smtps' : 'smtp')
                                 : 'smtp';
                         }

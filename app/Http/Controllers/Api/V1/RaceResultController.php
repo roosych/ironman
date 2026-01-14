@@ -10,7 +10,7 @@ use App\Http\Requests\RaceResult\StoreRaceResultRequest;
 use App\Http\Requests\RaceResult\UpdateRaceResultRequest;
 use App\Http\Resources\RaceResultResource;
 use App\Models\RaceResult;
-use App\Models\User;
+use App\Models\UserProfile;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
@@ -21,7 +21,8 @@ class RaceResultController extends Controller
     /** Get all race results (paginated) */
     public function index(): JsonResponse
     {
-        $results = RaceResult::orderByDesc('race_date')
+        $results = RaceResult::with(['profile.user'])
+            ->orderByDesc('race_date')
             ->paginate(15);
 
         return $this->successResponse([
@@ -35,23 +36,24 @@ class RaceResultController extends Controller
         ]);
     }
 
-    /** Get race results for a specific user */
-    public function userResults(User $user): JsonResponse
+    /** Get race results for a specific profile */
+    public function profileResults(UserProfile $userProfile): JsonResponse
     {
-        $results = $user->raceResults()
+        $results = $userProfile->raceResults()
+            ->with(['profile.user'])
             ->orderByDesc('race_date')
             ->get();
 
         return $this->successResponse([
             'data' => RaceResultResource::collection($results)
-                ->map(fn (RaceResultResource $r) => $r->withoutUserId()),
+                ->map(fn (RaceResultResource $r) => $r->withoutProfileId()),
         ]);
     }
 
     /** Get a single race result */
     public function show(RaceResult $raceResult): JsonResponse
     {
-        $raceResult->load('user');
+        $raceResult->load('profile.user');
 
         return $this->successResponse([
             'data' => RaceResultResource::make($raceResult),
@@ -61,7 +63,14 @@ class RaceResultController extends Controller
     /** Store a new race result */
     public function store(StoreRaceResultRequest $request): JsonResponse
     {
-        $raceResult = $request->user()->raceResults()->create($request->validated());
+        $profile = $request->user()->profile;
+
+        if (! $profile) {
+            return $this->errorResponse(['profile' => ['Профиль не найден.']], 403);
+        }
+
+        $raceResult = $profile->raceResults()->create($request->validated());
+        $raceResult->load('profile.user');
 
         return $this->successResponse([
             'data' => RaceResultResource::make($raceResult),
@@ -72,6 +81,7 @@ class RaceResultController extends Controller
     public function update(UpdateRaceResultRequest $request, RaceResult $raceResult): JsonResponse
     {
         $raceResult->update($request->validated());
+        $raceResult->load('profile.user');
 
         return $this->successResponse([
             'data' => RaceResultResource::make($raceResult),

@@ -16,11 +16,21 @@ class UserProfileService
     /**
      * Create or update user profile.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function updateProfile(User $user, array $data): UserProfile
     {
         return DB::transaction(function () use ($user, $data) {
+            // Если передано имя, обновляем его в таблице users и admin_full_name в user_profiles
+            if (isset($data['name'])) {
+                $user->update(['name' => $data['name']]);
+                $data['admin_full_name'] = $data['name'];
+                unset($data['name']); // Удаляем из данных, так как это поле для users, а не user_profiles
+            } elseif (! $user->profile) {
+                // Set admin_full_name from user's name if creating new profile
+                $data['admin_full_name'] = $user->name;
+            }
+
             return $user->profile()->updateOrCreate(
                 ['user_id' => $user->id],
                 $data
@@ -31,7 +41,7 @@ class UserProfileService
     /**
      * Upload photos for user.
      *
-     * @param array<UploadedFile> $files
+     * @param  array<UploadedFile>  $files
      * @return array<UserPhoto>
      */
     public function uploadPhotos(User $user, array $files): array

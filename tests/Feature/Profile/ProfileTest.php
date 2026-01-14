@@ -51,7 +51,7 @@ class ProfileTest extends TestCase
                     'profile',
                 ],
             ]);
-        
+
         // Проверяем, что если profile существует, то в нем есть нужные поля
         $profile = $response->json('data.profile');
         if ($profile !== null) {
@@ -69,8 +69,9 @@ class ProfileTest extends TestCase
 
         UserProfile::create([
             'user_id' => $user->id,
+            'admin_full_name' => $user->name,
             'role' => 'athlete',
-            'ironman_number' => 'IM12345',
+            'ironman_number' => 12345,
             'bio' => 'Test bio',
             'social_links' => ['strava' => 'https://strava.com/test'],
         ]);
@@ -80,7 +81,7 @@ class ProfileTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('data.profile.role', 'athlete')
-            ->assertJsonPath('data.profile.ironman_number', 'IM12345');
+            ->assertJsonPath('data.profile.ironman_number', 12345);
     }
 
     public function test_get_profile_requires_authentication(): void
@@ -99,19 +100,19 @@ class ProfileTest extends TestCase
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->putJson('/api/v1/user/profile', [
                 'role' => 'athlete',
-                'ironman_number' => 'IM12345',
+                'ironman_number' => 12345,
                 'bio' => 'Test athlete bio',
             ]);
 
         $response->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.profile.role', 'athlete')
-            ->assertJsonPath('data.profile.ironman_number', 'IM12345');
+            ->assertJsonPath('data.profile.ironman_number', 12345);
 
         $this->assertDatabaseHas('user_profiles', [
             'user_id' => $user->id,
             'role' => 'athlete',
-            'ironman_number' => 'IM12345',
+            'ironman_number' => 12345,
         ]);
     }
 
@@ -121,8 +122,9 @@ class ProfileTest extends TestCase
 
         UserProfile::create([
             'user_id' => $user->id,
+            'admin_full_name' => $user->name,
             'role' => 'athlete',
-            'ironman_number' => 'IM12345',
+            'ironman_number' => 12345,
         ]);
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")

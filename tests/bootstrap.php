@@ -12,4 +12,4 @@ $_ENV['DB_DATABASE'] = 'ironman_ai_testing';
 $_SERVER['DB_DATABASE'] = 'ironman_ai_testing';
 
 // Load Composer autoloader
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';

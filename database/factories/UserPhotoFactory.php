@@ -20,7 +20,7 @@ class UserPhotoFactory extends Factory
      */
     public function definition(): array
     {
-        $filename = $this->faker->uuid() . '.jpg';
+        $filename = $this->faker->uuid().'.jpg';
 
         return [
             'user_id' => User::factory(),

@@ -24,7 +24,8 @@ class UserResource extends JsonResource
             'verified' => $this->hasVerifiedEmail(),
             'profile' => $this->when(
                 $this->relationLoaded('profile'),
-                fn () => $this->profile ? UserProfileResource::make($this->profile) : null
+                fn () => $this->profile ? UserProfileResource::make($this->profile)->toArray($request) : null,
+                null
             ),
         ];
     }

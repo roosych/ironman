@@ -6,6 +6,7 @@ namespace Tests\Feature\RaceResult;
 
 use App\Models\RaceResult;
 use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,7 +28,7 @@ class RaceResultTest extends TestCase
                 'data' => [
                     '*' => [
                         'id',
-                        'user_id',
+                        'user_profile_id',
                         'race_date',
                         'location',
                         'race_type',
@@ -38,22 +39,20 @@ class RaceResultTest extends TestCase
                         't2_time',
                         'run_time',
                         'total_time',
-                        'age_group',
-                        'overall_position',
-                        'age_group_position',
+                        // age_group, overall_position, age_group_position are optional
                     ],
                 ],
                 'meta' => ['current_page', 'last_page', 'per_page', 'total'],
             ]);
     }
 
-    public function test_can_get_user_race_results(): void
+    public function test_can_get_profile_race_results(): void
     {
-        $user = User::factory()->create();
-        RaceResult::factory()->count(2)->create(['user_id' => $user->id]);
-        RaceResult::factory()->count(3)->create(); // other users' results
+        $profile = UserProfile::factory()->create();
+        RaceResult::factory()->count(2)->create(['user_profile_id' => $profile->id]);
+        RaceResult::factory()->count(3)->create(); // other profiles' results
 
-        $response = $this->getJson("/api/v1/users/{$user->id}/race-results");
+        $response = $this->getJson("/api/v1/profiles/{$profile->id}/race-results");
 
         $response->assertOk()
             ->assertJsonPath('success', true)
@@ -73,7 +72,7 @@ class RaceResultTest extends TestCase
                 'success',
                 'data' => [
                     'id',
-                    'user_id',
+                    'user_profile_id',
                     'race_date',
                     'location',
                     'race_type',
@@ -88,6 +87,7 @@ class RaceResultTest extends TestCase
     public function test_authenticated_user_can_create_race_result(): void
     {
         $user = User::factory()->create();
+        $profile = UserProfile::factory()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $data = [
@@ -116,10 +116,35 @@ class RaceResultTest extends TestCase
             ->assertJsonPath('data.total_time', '10:22:20');
 
         $this->assertDatabaseHas('race_results', [
-            'user_id' => $user->id,
+            'user_profile_id' => $profile->id,
             'location' => 'Kona, Hawaii',
             'race_type' => 'ironman',
         ]);
+    }
+
+    public function test_user_without_profile_cannot_create_race_result(): void
+    {
+        $user = User::factory()->create();
+        // No profile created
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        $data = [
+            'race_date' => '2024-10-13',
+            'location' => 'Kona, Hawaii',
+            'race_type' => 'ironman',
+            'swim_time' => 4365,
+            't1_time' => 330,
+            'bike_time' => 18920,
+            't2_time' => 195,
+            'run_time' => 13530,
+            'total_time' => 37340,
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/api/v1/race-results', $data);
+
+        $response->assertStatus(403)
+            ->assertJsonPath('success', false);
     }
 
     public function test_unauthenticated_user_cannot_create_race_result(): void
@@ -144,8 +169,9 @@ class RaceResultTest extends TestCase
     public function test_user_can_update_own_race_result(): void
     {
         $user = User::factory()->create();
+        $profile = UserProfile::factory()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
-        $result = RaceResult::factory()->create(['user_id' => $user->id]);
+        $result = RaceResult::factory()->create(['user_profile_id' => $profile->id]);
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->putJson("/api/v1/race-results/{$result->id}", [
@@ -160,9 +186,10 @@ class RaceResultTest extends TestCase
     public function test_user_cannot_update_others_race_result(): void
     {
         $user = User::factory()->create();
-        $otherUser = User::factory()->create();
+        $profile = UserProfile::factory()->create(['user_id' => $user->id]);
+        $otherProfile = UserProfile::factory()->create();
         $token = $user->createToken('auth_token')->plainTextToken;
-        $result = RaceResult::factory()->create(['user_id' => $otherUser->id]);
+        $result = RaceResult::factory()->create(['user_profile_id' => $otherProfile->id]);
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->putJson("/api/v1/race-results/{$result->id}", [
@@ -175,8 +202,9 @@ class RaceResultTest extends TestCase
     public function test_user_can_delete_own_race_result(): void
     {
         $user = User::factory()->create();
+        $profile = UserProfile::factory()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
-        $result = RaceResult::factory()->create(['user_id' => $user->id]);
+        $result = RaceResult::factory()->create(['user_profile_id' => $profile->id]);
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->deleteJson("/api/v1/race-results/{$result->id}");
@@ -191,9 +219,10 @@ class RaceResultTest extends TestCase
     public function test_user_cannot_delete_others_race_result(): void
     {
         $user = User::factory()->create();
-        $otherUser = User::factory()->create();
+        $profile = UserProfile::factory()->create(['user_id' => $user->id]);
+        $otherProfile = UserProfile::factory()->create();
         $token = $user->createToken('auth_token')->plainTextToken;
-        $result = RaceResult::factory()->create(['user_id' => $otherUser->id]);
+        $result = RaceResult::factory()->create(['user_profile_id' => $otherProfile->id]);
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->deleteJson("/api/v1/race-results/{$result->id}");
@@ -205,6 +234,7 @@ class RaceResultTest extends TestCase
     public function test_validation_fails_with_invalid_race_type(): void
     {
         $user = User::factory()->create();
+        UserProfile::factory()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
@@ -227,6 +257,7 @@ class RaceResultTest extends TestCase
     public function test_validation_fails_without_required_fields(): void
     {
         $user = User::factory()->create();
+        UserProfile::factory()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
@@ -270,22 +301,22 @@ class RaceResultTest extends TestCase
 
     public function test_race_results_are_ordered_by_date_descending(): void
     {
-        $user = User::factory()->create();
+        $profile = UserProfile::factory()->create();
 
         RaceResult::factory()->create([
-            'user_id' => $user->id,
+            'user_profile_id' => $profile->id,
             'race_date' => '2023-01-01',
         ]);
         RaceResult::factory()->create([
-            'user_id' => $user->id,
+            'user_profile_id' => $profile->id,
             'race_date' => '2024-06-15',
         ]);
         RaceResult::factory()->create([
-            'user_id' => $user->id,
+            'user_profile_id' => $profile->id,
             'race_date' => '2022-05-20',
         ]);
 
-        $response = $this->getJson("/api/v1/users/{$user->id}/race-results");
+        $response = $this->getJson("/api/v1/profiles/{$profile->id}/race-results");
 
         $response->assertOk();
         $data = $response->json('data');

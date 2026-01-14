@@ -33,8 +33,27 @@ class AuthController extends Controller
     {
         $user->load(['profile', 'photos']);
 
-        // Устанавливаем user для profile, чтобы UserProfileResource мог получить photos
+        // Загружаем результаты гонок для профиля, если он существует
         if ($user->profile) {
+            $user->profile->load(['raceResults' => function ($query) {
+                $query->orderByDesc('race_date');
+            }]);
+            $user->profile->setRelation('user', $user);
+        }
+
+        return $user;
+    }
+
+    /**
+     * Load user with profile for login (statistics only, without full race results list).
+     */
+    private function loadUserForLogin(User $user): User
+    {
+        $user->load(['profile', 'photos']);
+
+        // Загружаем результаты гонок для вычисления статистики, но не возвращаем их в ответе
+        if ($user->profile) {
+            $user->profile->load('raceResults'); // Загружаем без сортировки, только для статистики
             $user->profile->setRelation('user', $user);
         }
 
@@ -50,9 +69,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->safe()->password),
         ]);
 
-        //event(new Registered($user));
+        // event(new Registered($user));
 
-        $user->notify(new VerifyEmailNotification());
+        $user->notify(new VerifyEmailNotification);
 
         // Загружаем relations для консистентности ответа (будут null/empty для нового пользователя)
         $this->loadUserWithProfile($user);
@@ -70,29 +89,33 @@ class AuthController extends Controller
     /** Login user and create token */
     public function login(LoginRequest $request): JsonResponse
     {
-        if (!Auth::attempt($request->validated())) {
+        if (! Auth::attempt($request->validated())) {
             return $this->errorResponse([
-                'email' => ['Неверный email или пароль.']
+                'email' => ['Неверный email или пароль.'],
             ], 401);
         }
 
         /** @var User $user */
         $user = Auth::user();
-        $this->loadUserWithProfile($user);
+        $this->loadUserForLogin($user);
 
         // Remove all previous tokens
         $user->tokens()->delete();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // Создаем специальный request с флагом для исключения race_results при логине
+        $loginRequest = clone $request;
+        $loginRequest->merge(['exclude_race_results' => true]);
+
         $responseData = [
             'data' => [
-                'user' => UserResource::make($user),
+                'user' => UserResource::make($user)->toArray($loginRequest),
                 'token' => $token,
             ],
         ];
 
-        if (!$user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             $responseData['message'] = 'Ваш email не подтверждён. Пожалуйста, проверьте почту или запросите новое письмо для подтверждения.';
         }
 
@@ -103,7 +126,7 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return $this->errorResponse(['auth' => ['Не авторизован.']], 401);
         }
 
@@ -120,7 +143,7 @@ class AuthController extends Controller
         $this->loadUserWithProfile($user);
 
         return $this->successResponse([
-            'data' => UserResource::make($user)
+            'data' => UserResource::make($user),
         ]);
     }
 
@@ -132,11 +155,11 @@ class AuthController extends Controller
         // Проверка: подтвержденный пользователь не может запросить письмо заново
         if ($user->hasVerifiedEmail()) {
             return $this->errorResponse([
-                'email' => ['Email уже подтверждён. Нет необходимости отправлять письмо повторно.']
+                'email' => ['Email уже подтверждён. Нет необходимости отправлять письмо повторно.'],
             ], 422);
         }
 
-        $user->notify(new VerifyEmailNotification());
+        $user->notify(new VerifyEmailNotification);
 
         return $this->successResponse(['message' => 'Письмо для подтверждения отправлено.']);
     }
@@ -174,23 +197,23 @@ class AuthController extends Controller
         // Обработка различных статусов ошибок
         if ($status === Password::PASSWORD_RESET) {
             return $this->successResponse([
-                'message' => 'Пароль успешно изменён.'
+                'message' => 'Пароль успешно изменён.',
             ]);
         }
 
         // Детальная обработка ошибок
         $errorMessages = match ($status) {
             Password::INVALID_TOKEN => [
-                'token' => ['Неверный или истёкший токен сброса пароля. Пожалуйста, запросите новую ссылку для сброса пароля.']
+                'token' => ['Неверный или истёкший токен сброса пароля. Пожалуйста, запросите новую ссылку для сброса пароля.'],
             ],
             Password::INVALID_USER => [
-                'email' => ['Пользователь с таким email не найден.']
+                'email' => ['Пользователь с таким email не найден.'],
             ],
             Password::THROTTLED => [
-                'email' => ['Слишком много попыток. Пожалуйста, попробуйте позже.']
+                'email' => ['Слишком много попыток. Пожалуйста, попробуйте позже.'],
             ],
             default => [
-                'email' => ['Не удалось сбросить пароль. Проверьте данные и попробуйте снова.']
+                'email' => ['Не удалось сбросить пароль. Проверьте данные и попробуйте снова.'],
             ],
         };
 
