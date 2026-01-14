@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\RaceType;
 use App\Models\RaceResult;
-use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,7 +25,7 @@ class RaceResultFactory extends Factory
         $times = $this->generateTimes($raceType);
 
         return [
-            'user_id' => User::factory(),
+            'user_profile_id' => UserProfile::factory(),
             'race_date' => fake()->dateTimeBetween('-3 years', 'now'),
             'location' => fake()->city().', '.fake()->country(),
             'race_type' => $raceType,

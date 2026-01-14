@@ -10,7 +10,9 @@ class DeleteRaceResultRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->id === $this->route('raceResult')->user_id;
+        $profile = $this->user()->profile;
+
+        return $profile && $profile->id === $this->route('raceResult')->user_profile_id;
     }
 
     /**

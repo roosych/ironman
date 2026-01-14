@@ -34,7 +34,7 @@ class EmailVerificationTest extends TestCase
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
     }
 
-    public function test_user_profile_created_after_email_verification(): void
+    public function test_user_profile_not_created_after_email_verification(): void
     {
         $user = User::factory()->unverified()->create();
 
@@ -49,38 +49,12 @@ class EmailVerificationTest extends TestCase
 
         $this->get($verificationUrl);
 
-        // Refresh user and check profile was created
+        // Refresh user and verify profile was NOT created (data-first architecture)
         $user->refresh();
-        $this->assertNotNull($user->profile);
-        $this->assertEquals('athlete', $user->profile->role);
-        $this->assertDatabaseHas('user_profiles', [
+        $this->assertNull($user->profile);
+        $this->assertDatabaseMissing('user_profiles', [
             'user_id' => $user->id,
-            'role' => 'athlete',
         ]);
-    }
-
-    public function test_already_verified_user_does_not_duplicate_profile(): void
-    {
-        $user = User::factory()->create(); // Already verified
-
-        // Create profile manually (simulating already existing profile)
-        \App\Models\UserProfile::create([
-            'user_id' => $user->id,
-            'role' => 'coach',
-        ]);
-
-        $verificationUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => sha1($user->email)]
-        );
-
-        $this->get($verificationUrl);
-
-        // Profile should remain unchanged (coach role)
-        $user->refresh();
-        $this->assertEquals('coach', $user->profile->role);
-        $this->assertDatabaseCount('user_profiles', 1);
     }
 
     public function test_email_verification_fails_with_invalid_hash(): void
@@ -159,7 +133,7 @@ class EmailVerificationTest extends TestCase
         $user = User::factory()->unverified()->create();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/v1/auth/email/resend-verification');
 
         $response->assertOk()
@@ -175,7 +149,7 @@ class EmailVerificationTest extends TestCase
         $user = User::factory()->create(); // Already verified
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/v1/auth/email/resend-verification');
 
         $response->assertStatus(422)

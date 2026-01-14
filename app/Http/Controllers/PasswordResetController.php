@@ -12,7 +12,7 @@ class PasswordResetController extends Controller
 {
     /**
      * Show the password reset form
-     * 
+     *
      * Пользователь переходит по ссылке из письма и видит форму для ввода нового пароля.
      * Валидация токена происходит при отправке формы через API.
      */
@@ -22,7 +22,7 @@ class PasswordResetController extends Controller
         $email = $request->query('email');
 
         // Проверка наличия обязательных параметров
-        if (!$token || !$email) {
+        if (! $token || ! $email) {
             return view('auth.reset-password-error', [
                 'message' => 'Неверная ссылка для сброса пароля. Пожалуйста, запросите новую ссылку.',
             ]);
@@ -30,7 +30,7 @@ class PasswordResetController extends Controller
 
         // Проверка существования пользователя (опционально, для лучшего UX)
         $user = User::where('email', $email)->first();
-        if (!$user) {
+        if (! $user) {
             return view('auth.reset-password-error', [
                 'message' => 'Пользователь с таким email не найден.',
             ]);
@@ -51,4 +51,3 @@ class PasswordResetController extends Controller
         return view('auth.reset-password-success');
     }
 }
-

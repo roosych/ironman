@@ -25,13 +25,13 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
     {
         $verificationUrl = $this->verificationUrl($notifiable);
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject('Подтверждение email адреса')
             ->greeting('Здравствуйте!')
             ->line('Пожалуйста, нажмите на кнопку ниже для подтверждения вашего email адреса.')
             ->action('Подтвердить Email', $verificationUrl)
             ->line('Если вы не создавали аккаунт, никаких дальнейших действий не требуется.')
-            ->salutation('С уважением, команда ' . config('app.name'));
+            ->salutation('С уважением, команда '.config('app.name'));
     }
 
     protected function verificationUrl(object $notifiable): string

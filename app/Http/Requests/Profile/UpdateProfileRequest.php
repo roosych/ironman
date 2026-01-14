@@ -22,8 +22,9 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => ['sometimes', 'string', 'max:255'],
             'role' => ['sometimes', 'string', Rule::in(['athlete', 'coach', 'admin'])],
-            'ironman_number' => ['nullable', 'string', 'max:50'],
+            'ironman_number' => ['nullable', 'integer', 'min:1'],
             'bio' => ['nullable', 'string', 'max:500'],
             'social_links' => ['nullable', 'array'],
             'social_links.strava' => ['nullable', 'url', 'max:255'],
@@ -38,8 +39,10 @@ class UpdateProfileRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'name.max' => 'Имя не должно превышать 255 символов.',
             'role.in' => 'Роль должна быть одной из: athlete, coach, admin.',
-            'ironman_number.max' => 'Номер Ironman не должен превышать 50 символов.',
+            'ironman_number.integer' => 'Номер Ironman должен быть целым числом.',
+            'ironman_number.min' => 'Номер Ironman должен быть положительным числом.',
             'bio.max' => 'Биография не должна превышать 500 символов.',
             'social_links.strava.url' => 'Ссылка на Strava должна быть валидным URL.',
             'social_links.facebook.url' => 'Ссылка на Facebook должна быть валидным URL.',
