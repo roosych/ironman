@@ -56,6 +56,9 @@ Route::get('/athletes', [AthleteController::class, 'index'])
 Route::get('/athletes/{id}', [AthleteController::class, 'show'])
     ->middleware('throttle:60,1')
     ->name('v1.athletes.show');
+Route::get('/athletes/{id}/records', [AthleteController::class, 'records'])
+    ->middleware('throttle:60,1')
+    ->name('v1.athletes.records');
 
 // Public race results routes
 Route::get('/race-results', [RaceResultController::class, 'index'])->name('v1.race-results.index');

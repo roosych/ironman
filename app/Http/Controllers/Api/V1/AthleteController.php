@@ -152,4 +152,65 @@ class AthleteController extends Controller
             ->where('run_time', '>', 0)
             ->where('total_time', '>', 0);
     }
+
+    /**
+     * Get athlete's personal records by discipline for each race type.
+     */
+    public function records(int $id): JsonResponse
+    {
+        $profile = UserProfile::where('id', $id)
+            ->where('role', 'athlete')
+            ->first();
+
+        if (!$profile) {
+            return $this->errorResponse(['athlete' => ['Атлет не найден.']], 404);
+        }
+
+        $records = [];
+        $disciplines = ['swim_time', 'bike_time', 'run_time', 'total_time'];
+
+        foreach (RaceType::cases() as $raceType) {
+            $raceTypeRecords = [];
+
+            foreach ($disciplines as $discipline) {
+                $record = $this->getBestTimeForDiscipline($profile->id, $raceType, $discipline);
+                $raceTypeRecords[$this->formatDisciplineName($discipline)] = $record;
+            }
+
+            $records[$raceType->value] = $raceTypeRecords;
+        }
+
+        return $this->successResponse(['data' => $records]);
+    }
+
+    /**
+     * Get the best time for a specific discipline in a race type.
+     */
+    private function getBestTimeForDiscipline(int $profileId, RaceType $raceType, string $discipline): ?array
+    {
+        $result = RaceResult::where('user_profile_id', $profileId)
+            ->where('race_type', $raceType)
+            ->where($discipline, '>', 0)
+            ->orderBy($discipline)
+            ->first();
+
+        if (!$result) {
+            return null;
+        }
+
+        return [
+            'time' => RaceResult::formatTime($result->$discipline),
+            'seconds' => $result->$discipline,
+            'race_date' => $result->race_date->format('Y-m-d'),
+            'location' => $result->location,
+        ];
+    }
+
+    /**
+     * Format discipline name for response (remove _time suffix).
+     */
+    private function formatDisciplineName(string $discipline): string
+    {
+        return str_replace('_time', '', $discipline);
+    }
 }

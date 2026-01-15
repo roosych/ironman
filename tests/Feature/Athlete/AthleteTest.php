@@ -341,4 +341,111 @@ class AthleteTest extends TestCase
         $response = $this->getJson("/api/v1/athletes/{$athlete2->id}");
         $response->assertJsonPath('data.ranking.ironman', null);
     }
+
+    public function test_can_get_athlete_records(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create();
+
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $profile->id,
+            'swim_time' => 4000,
+            't1_time' => 300,
+            'bike_time' => 18000,
+            't2_time' => 200,
+            'run_time' => 13500,
+            'total_time' => 36000,
+            'race_date' => '2023-06-15',
+            'location' => 'Hamburg',
+        ]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/records");
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'ironman' => [
+                        'swim' => ['time', 'seconds', 'race_date', 'location'],
+                        'bike',
+                        'run',
+                        'total',
+                    ],
+                    'ironman_70_3',
+                    '5150',
+                ],
+            ]);
+    }
+
+    public function test_records_returns_best_time_per_discipline(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create();
+
+        // First race - slower swim, faster bike
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $profile->id,
+            'swim_time' => 5000,
+            'bike_time' => 17000,
+            'race_date' => '2023-01-01',
+            'location' => 'Race 1',
+        ]);
+
+        // Second race - faster swim, slower bike
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $profile->id,
+            'swim_time' => 4000,
+            'bike_time' => 19000,
+            'race_date' => '2023-06-01',
+            'location' => 'Race 2',
+        ]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/records");
+
+        $response->assertOk()
+            ->assertJsonPath('data.ironman.swim.seconds', 4000)
+            ->assertJsonPath('data.ironman.swim.location', 'Race 2')
+            ->assertJsonPath('data.ironman.bike.seconds', 17000)
+            ->assertJsonPath('data.ironman.bike.location', 'Race 1');
+    }
+
+    public function test_records_returns_null_for_missing_disciplines(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create();
+
+        // Only ironman results, no 70.3
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $profile->id,
+        ]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/records");
+
+        $response->assertOk()
+            ->assertJsonPath('data.ironman_70_3.swim', null)
+            ->assertJsonPath('data.ironman_70_3.bike', null);
+    }
+
+    public function test_records_returns_404_for_non_athlete(): void
+    {
+        $coach = UserProfile::factory()->coach()->create();
+
+        $response = $this->getJson("/api/v1/athletes/{$coach->id}/records");
+
+        $response->assertStatus(404);
+    }
+
+    public function test_records_formats_time_correctly(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create();
+
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $profile->id,
+            'swim_time' => 3661, // 1:01:01
+        ]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/records");
+
+        $response->assertOk()
+            ->assertJsonPath('data.ironman.swim.time', '01:01:01')
+            ->assertJsonPath('data.ironman.swim.seconds', 3661);
+    }
 }
