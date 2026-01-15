@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AdminController;
+use App\Http\Controllers\Api\V1\AthleteController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\RaceResultController;
 use App\Http\Controllers\Api\V1\User\PasswordController;
@@ -47,6 +48,11 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
     Route::post('/photos', [ProfileController::class, 'uploadPhotos'])->name('v1.user.photos.upload');
     Route::delete('/photos/{photoId}', [ProfileController::class, 'deletePhoto'])->name('v1.user.photos.delete');
 });
+
+// Public athletes routes
+Route::get('/athletes', [AthleteController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('v1.athletes.index');
 
 // Public race results routes
 Route::get('/race-results', [RaceResultController::class, 'index'])->name('v1.race-results.index');
