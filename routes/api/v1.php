@@ -53,6 +53,9 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
 Route::get('/athletes', [AthleteController::class, 'index'])
     ->middleware('throttle:60,1')
     ->name('v1.athletes.index');
+Route::get('/athletes/{id}', [AthleteController::class, 'show'])
+    ->middleware('throttle:60,1')
+    ->name('v1.athletes.show');
 
 // Public race results routes
 Route::get('/race-results', [RaceResultController::class, 'index'])->name('v1.race-results.index');

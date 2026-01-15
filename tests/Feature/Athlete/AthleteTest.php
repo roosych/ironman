@@ -154,4 +154,191 @@ class AthleteTest extends TestCase
 
         $response->assertStatus(429);
     }
+
+    public function test_can_get_single_athlete(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create([
+            'ironman_number' => 12345,
+            'bio' => 'Test bio',
+            'social_links' => ['instagram' => '@test'],
+        ]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}");
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.id', $profile->id)
+            ->assertJsonPath('data.ironman_number', 12345)
+            ->assertJsonPath('data.bio', 'Test bio')
+            ->assertJsonPath('data.social_links.instagram', '@test')
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'id',
+                    'name',
+                    'avatar',
+                    'race_counts' => [
+                        'ironman',
+                        'ironman_70_3',
+                        '5150',
+                    ],
+                    'ironman_number',
+                    'bio',
+                    'social_links',
+                    'ranking',
+                ],
+            ]);
+    }
+
+    public function test_single_athlete_returns_404_when_not_found(): void
+    {
+        $response = $this->getJson('/api/v1/athletes/999');
+
+        $response->assertStatus(404)
+            ->assertJsonPath('success', false);
+    }
+
+    public function test_single_athlete_returns_404_for_non_athlete_profile(): void
+    {
+        $coach = UserProfile::factory()->coach()->create();
+
+        $response = $this->getJson("/api/v1/athletes/{$coach->id}");
+
+        $response->assertStatus(404)
+            ->assertJsonPath('success', false);
+    }
+
+    public function test_single_athlete_has_correct_race_counts(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create();
+
+        RaceResult::factory()->ironman()->count(2)->create(['user_profile_id' => $profile->id]);
+        RaceResult::factory()->ironman703()->count(4)->create(['user_profile_id' => $profile->id]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}");
+
+        $response->assertOk()
+            ->assertJsonPath('data.race_counts.ironman', 2)
+            ->assertJsonPath('data.race_counts.ironman_70_3', 4)
+            ->assertJsonPath('data.race_counts.5150', 0);
+    }
+
+    public function test_single_athlete_returns_avatar_when_exists(): void
+    {
+        $user = User::factory()->create();
+        $profile = UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
+        UserPhoto::factory()->avatar()->create(['user_id' => $user->id]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}");
+
+        $response->assertOk();
+        $this->assertNotNull($response->json('data.avatar'));
+    }
+
+    public function test_list_does_not_include_detailed_fields(): void
+    {
+        UserProfile::factory()->athlete()->create([
+            'ironman_number' => 12345,
+            'bio' => 'Test bio',
+        ]);
+
+        $response = $this->getJson('/api/v1/athletes');
+
+        $response->assertOk();
+        $data = $response->json('data.0');
+
+        $this->assertArrayNotHasKey('ironman_number', $data);
+        $this->assertArrayNotHasKey('bio', $data);
+        $this->assertArrayNotHasKey('social_links', $data);
+        $this->assertArrayNotHasKey('ranking', $data);
+    }
+
+    public function test_ranking_is_calculated_correctly(): void
+    {
+        // Create 3 athletes with different best times for ironman
+        $athlete1 = UserProfile::factory()->athlete()->create();
+        $athlete2 = UserProfile::factory()->athlete()->create();
+        $athlete3 = UserProfile::factory()->athlete()->create();
+
+        // Athlete 1: best time 36000 (10 hours)
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $athlete1->id,
+            'total_time' => 36000,
+        ]);
+
+        // Athlete 2: best time 32000 (best)
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $athlete2->id,
+            'total_time' => 32000,
+        ]);
+
+        // Athlete 3: best time 34000 (middle)
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $athlete3->id,
+            'total_time' => 34000,
+        ]);
+
+        // Athlete 2 should be #1 of 3
+        $response = $this->getJson("/api/v1/athletes/{$athlete2->id}");
+        $response->assertJsonPath('data.ranking.ironman.position', 1)
+            ->assertJsonPath('data.ranking.ironman.total', 3);
+
+        // Athlete 3 should be #2 of 3
+        $response = $this->getJson("/api/v1/athletes/{$athlete3->id}");
+        $response->assertJsonPath('data.ranking.ironman.position', 2)
+            ->assertJsonPath('data.ranking.ironman.total', 3);
+
+        // Athlete 1 should be #3 of 3
+        $response = $this->getJson("/api/v1/athletes/{$athlete1->id}");
+        $response->assertJsonPath('data.ranking.ironman.position', 3)
+            ->assertJsonPath('data.ranking.ironman.total', 3);
+    }
+
+    public function test_ranking_is_null_when_no_results(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create();
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}");
+
+        $response->assertOk()
+            ->assertJsonPath('data.ranking.ironman', null)
+            ->assertJsonPath('data.ranking.ironman_70_3', null);
+    }
+
+    public function test_ranking_excludes_incomplete_results(): void
+    {
+        $athlete1 = UserProfile::factory()->athlete()->create();
+        $athlete2 = UserProfile::factory()->athlete()->create();
+
+        // Athlete 1: complete result
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $athlete1->id,
+            'total_time' => 36000,
+            'swim_time' => 4000,
+            't1_time' => 300,
+            'bike_time' => 18000,
+            't2_time' => 200,
+            'run_time' => 13500,
+        ]);
+
+        // Athlete 2: incomplete result (swim_time = 0)
+        RaceResult::factory()->ironman()->create([
+            'user_profile_id' => $athlete2->id,
+            'total_time' => 32000,
+            'swim_time' => 0,
+            't1_time' => 300,
+            'bike_time' => 18000,
+            't2_time' => 200,
+            'run_time' => 13500,
+        ]);
+
+        // Athlete 1 should be #1 of 1 (athlete 2 excluded)
+        $response = $this->getJson("/api/v1/athletes/{$athlete1->id}");
+        $response->assertJsonPath('data.ranking.ironman.position', 1)
+            ->assertJsonPath('data.ranking.ironman.total', 1);
+
+        // Athlete 2 should have no ranking (incomplete result)
+        $response = $this->getJson("/api/v1/athletes/{$athlete2->id}");
+        $response->assertJsonPath('data.ranking.ironman', null);
+    }
 }
