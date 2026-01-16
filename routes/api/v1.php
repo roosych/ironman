@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\AthleteController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\RaceResultController;
 use App\Http\Controllers\Api\V1\RankingController;
+use App\Http\Controllers\Api\V1\UpcomingRaceController;
 use App\Http\Controllers\Api\V1\User\PasswordController;
 use App\Http\Controllers\Api\V1\User\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,17 @@ Route::get('/athletes/{id}/records', [AthleteController::class, 'records'])
 Route::get('/rankings', [RankingController::class, 'index'])
     ->middleware('throttle:60,1')
     ->name('v1.rankings.index');
+
+// Public upcoming races routes
+Route::get('/upcoming-races', [UpcomingRaceController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('v1.upcoming-races.index');
+
+// Protected upcoming races routes
+Route::middleware('auth:sanctum')->group(function (): void {
+    Route::post('/upcoming-races', [UpcomingRaceController::class, 'store'])
+        ->name('v1.upcoming-races.store');
+});
 
 // Public race results routes
 Route::get('/race-results', [RaceResultController::class, 'index'])->name('v1.race-results.index');

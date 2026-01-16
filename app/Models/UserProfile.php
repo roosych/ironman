@@ -42,6 +42,11 @@ class UserProfile extends Model
         return $this->hasMany(RaceResult::class);
     }
 
+    public function upcomingRaces(): HasMany
+    {
+        return $this->hasMany(UpcomingRace::class);
+    }
+
     public function isAthlete(): bool
     {
         return $this->role === 'athlete';
