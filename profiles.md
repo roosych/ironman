@@ -1,237 +1,177 @@
-Переработка архитектуры профилей атлетов и результатов (Laravel API)
+🧩 TASK: Upcoming Races (запланированные гонки атлетов)
+🎯 Цель
 
-⚠️ ОБЯЗАТЕЛЬНО: работа только в новой Git-ветке
+Реализовать функционал upcoming гонок, которые атлет планирует пройти.
 
-🔷 GIT FLOW (СДЕЛАТЬ ПЕРВЫМ)
+Атлет может:
 
-1️⃣ Убедиться, что текущая ветка — main
-2️⃣ Создать новую ветку от main:
+создать будущую гонку
 
-git checkout main
-git pull
-git checkout -b feature/user-profile-decoupling
+указать тип, локацию и дату
 
+видеть свои upcoming гонки
 
-❗ Вся работа ТОЛЬКО в этой ветке
-❗ В main ничего не коммитить
+видеть все upcoming гонки других атлетов
 
-🔷 КОНТЕКСТ ПРОЕКТА
+В будущем:
 
-Ты работаешь с существующим Laravel API (Laravel 11/12, Sanctum, REST, API-first).
-Аутентификация, профили, результаты и мобильное приложение уже существуют и работают.
+админ сможет подтверждать / скрывать гонки
 
-❗ Твоя задача — переработать связи, не ломая API.
+🧠 Ключевые решения (ВАЖНО)
+❓ Один эндпоинт или несколько?
 
-🔷 ТЕКУЩАЯ ПРОБЛЕМА
+➡️ Один эндпоинт со смарт-фильтрацией — лучше
 
-Сейчас:
+Причины:
 
-RaceResult привязан к user_id
+проще поддерживать
 
-UserProfile создаётся автоматически после подтверждения email
+меньше дублирования логики
 
-Нельзя заранее создать профили и привязать к ним результаты
+легко расширить (admin, pagination, search)
 
-🎯 ЦЕЛЬ
+🗄 Модель данных
+Таблица: upcoming_races
+Schema::create('upcoming_races', function (Blueprint $table) {
+    $table->id();
 
-Перейти на Data-first архитектуру, где:
+    $table->foreignId('user_profile_id')
+        ->constrained()
+        ->cascadeOnDelete();
 
-UserProfile создаётся заранее
+    $table->enum('race_type', [
+        'ironman',
+        'ironman_70_3',
+        '5150'
+    ]);
 
-RaceResult принадлежит UserProfile
+    $table->string('location');
+    $table->date('race_date');
 
-User после регистрации вручную привязывается к профилю
+    // Для будущей модерации
+    $table->boolean('is_active')->default(true);
 
-user_profiles.user_id может быть NULL
+    $table->timestamps();
+});
 
-❌ Никакого автоматического создания профиля
-
-🧱 КАНОНИЧЕСКАЯ МОДЕЛЬ
-User
-
-аккаунт
-
-email / пароль / токены
-
-может существовать без профиля
-
-UserProfile
-
-атлет / тренер / админ
-
-может существовать без user
-
-содержит:
-
-role
-
-ironman_number (nullable)
-
-bio
-
-social_links
-
-admin_full_name (служебное поле)
-
-user_id (nullable)
-
-RaceResult
-
-принадлежит UserProfile
-
-❌ НЕ принадлежит User напрямую
-
-🔷 ЧТО НУЖНО СДЕЛАТЬ
-1️⃣ Миграции базы данных
-user_profiles
-
-добавить поле:
-
-admin_full_name VARCHAR(255) NOT NULL
-
-
-user_id:
-
-nullable
-
-unique
-
-foreign key → users.id
-
-nullOnDelete
-
-race_results
-
-удалить user_id
-
-добавить user_profile_id
-
-foreign key → user_profiles.id
-
-2️⃣ Обновить модели Eloquent
-User
-public function profile(): HasOne
+🧩 Модель UpcomingRace
+class UpcomingRace extends Model
 {
-    return $this->hasOne(UserProfile::class);
+    protected $fillable = [
+        'user_profile_id',
+        'race_type',
+        'location',
+        'race_date',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'race_date' => 'date',
+        'is_active' => 'boolean',
+    ];
+
+    public function profile()
+    {
+        return $this->belongsTo(UserProfile::class, 'user_profile_id');
+    }
 }
 
-
-❌ НЕ создавать профиль автоматически
-❌ НЕ менять логику регистрации
-
-UserProfile
-public function user(): BelongsTo
+🔗 Связь в UserProfile
+public function upcomingRaces()
 {
-    return $this->belongsTo(User::class);
+    return $this->hasMany(UpcomingRace::class);
 }
 
-public function raceResults(): HasMany
+📡 API эндпоинты
+1️⃣ Создание upcoming гонки (атлет)
+POST /api/v1/upcoming-races
+
+Body
 {
-    return $this->hasMany(RaceResult::class);
+  "race_type": "ironman",
+  "location": "Hamburg, Germany",
+  "race_date": "2026-07-12"
 }
 
-RaceResult
-public function profile(): BelongsTo
+Логика
+
+user_profile_id берётся из авторизованного пользователя
+
+is_active = true по умолчанию
+
+проверка, что дата в будущем
+
+2️⃣ Получение списка upcoming гонок (универсальный)
+GET /api/v1/upcoming-races
+
+Query params (опционально)
+Параметр	Назначение
+user_profile_id	Гонки конкретного атлета
+race_type	Фильтр по типу
+only_active	default = true
+Примеры
+/api/v1/upcoming-races
+/api/v1/upcoming-races?user_profile_id=39
+/api/v1/upcoming-races?race_type=ironman
+
+📤 Формат ответа
 {
-    return $this->belongsTo(UserProfile::class, 'user_profile_id');
+  "success": true,
+  "data": [
+    {
+      "id": 12,
+      "race_type": "ironman",
+      "race_type_label": "Ironman",
+      "location": "Hamburg, Germany",
+      "race_date": "2026-07-12",
+      "is_active": true,
+      "created_by": {
+        "id": 39,
+        "name": "Aydin Karimov",
+        "avatar": "http://localhost:8000/storage/profile_photos/1/avatar.jpg"
+      }
+    }
+  ]
 }
 
-3️⃣ Регистрация и Email Verification
-
-❗ КРИТИЧЕСКОЕ
-
-После регистрации
-
-После подтверждения email
-
-🚫 НЕ создавать UserProfile автоматически
-
-User может:
-
-логиниться
-
-иметь profile = null
-
-4️⃣ API поведение
-
-Если профиль не привязан:
-
+🧠 Контроллер (логика получения)
+public function index(Request $request)
 {
-  "profile": null
+    $query = UpcomingRace::with('profile.avatar')
+        ->where('is_active', true)
+        ->orderBy('race_date');
+
+    if ($request->filled('user_profile_id')) {
+        $query->where('user_profile_id', $request->user_profile_id);
+    }
+
+    if ($request->filled('race_type')) {
+        $query->where('race_type', $request->race_type);
+    }
+
+    $races = $query->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $races->map(fn ($race) => [
+            'id' => $race->id,
+            'race_type' => $race->race_type,
+            'race_type_label' => $race->race_type_label,
+            'location' => $race->location,
+            'race_date' => $race->race_date->toDateString(),
+            'is_active' => $race->is_active,
+            'created_by' => [
+                'id' => $race->profile->id,
+                'name' => $race->profile->display_name,
+                'avatar' => optional($race->profile->avatar)->url,
+            ],
+        ])
+    ]);
 }
 
-
-Frontend сам решает, что показывать.
-
-5️⃣ Привязка профиля (РУЧНАЯ)
-
-❌ НЕ делать публичный эндпоинт
-
-Привязка выполняется:
-
-вручную через БД
-
-или через админ-инструмент (НЕ в этом таске)
-
-UPDATE user_profiles
-SET user_id = :userId
-WHERE id = :profileId;
-
-6️⃣ Обновить запросы результатов
-
-Все результаты получаются через user.profile.raceResults
-
-GET /users/{id}/race-results:
-
-искать через user_profiles.id
-
-7️⃣ Совместимость
-
-❌ не ломать JSON формат
-
-❌ не менять структуру API
-
-❌ не добавлять бизнес-логику
-
-✅ только переработка связей
-
-🔒 КАЧЕСТВО
-
-Чистые миграции
-
-Строгая типизация
-
-Без логики в контроллерах
-
-API подходит для WEB + Mobile
-
-🧪 ПРОВЕРКА
-
-✔ Профиль может существовать без user
-✔ User может существовать без профиля
-✔ Результаты привязаны к профилю
-✔ После ручной привязки:
-
-профиль появляется
-
-результаты доступны
-
-❗ ЗАПРЕЩЕНО
-
-Автосоздание профиля
-
-Привязка результатов к user
-
-Матчинг по email
-
-Хранение ФИО в users
-
-🔚 ЗАВЕРШЕНИЕ РАБОТЫ
-
-После выполнения:
-
-git status        # рабочее дерево чистое
-git commit -m "Refactor profiles and race results to data-first architecture"
-
-
-❗ НЕ делать merge в main
+🧪 Валидация (создание)
+$request->validate([
+    'race_type' => 'required|in:ironman,ironman_70_3,5150',
+    'location' => 'required|string|max:255',
+    'race_date' => 'required|date|after:today',
+]);

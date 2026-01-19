@@ -3,8 +3,11 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AdminController;
+use App\Http\Controllers\Api\V1\AthleteController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\RaceResultController;
+use App\Http\Controllers\Api\V1\RankingController;
+use App\Http\Controllers\Api\V1\UpcomingRaceController;
 use App\Http\Controllers\Api\V1\User\PasswordController;
 use App\Http\Controllers\Api\V1\User\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +49,33 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
     Route::get('/photos', [ProfileController::class, 'getPhotos'])->name('v1.user.photos.index');
     Route::post('/photos', [ProfileController::class, 'uploadPhotos'])->name('v1.user.photos.upload');
     Route::delete('/photos/{photoId}', [ProfileController::class, 'deletePhoto'])->name('v1.user.photos.delete');
+});
+
+// Public athletes routes
+Route::get('/athletes', [AthleteController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('v1.athletes.index');
+Route::get('/athletes/{id}', [AthleteController::class, 'show'])
+    ->middleware('throttle:60,1')
+    ->name('v1.athletes.show');
+Route::get('/athletes/{id}/records', [AthleteController::class, 'records'])
+    ->middleware('throttle:60,1')
+    ->name('v1.athletes.records');
+
+// Public rankings routes
+Route::get('/rankings', [RankingController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('v1.rankings.index');
+
+// Public upcoming races routes
+Route::get('/upcoming-races', [UpcomingRaceController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('v1.upcoming-races.index');
+
+// Protected upcoming races routes
+Route::middleware('auth:sanctum')->group(function (): void {
+    Route::post('/upcoming-races', [UpcomingRaceController::class, 'store'])
+        ->name('v1.upcoming-races.store');
 });
 
 // Public race results routes
