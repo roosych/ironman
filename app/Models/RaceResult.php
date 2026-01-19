@@ -27,6 +27,9 @@ class RaceResult extends Model
         'age_group',
         'overall_position',
         'age_group_position',
+        'is_approved',
+        'approved_at',
+        'approved_by',
     ];
 
     protected $casts = [
@@ -40,11 +43,18 @@ class RaceResult extends Model
         'total_time' => 'integer',
         'overall_position' => 'integer',
         'age_group_position' => 'integer',
+        'is_approved' => 'boolean',
+        'approved_at' => 'datetime',
     ];
 
     public function profile(): BelongsTo
     {
         return $this->belongsTo(UserProfile::class, 'user_profile_id');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     public static function formatTime(int $seconds): string

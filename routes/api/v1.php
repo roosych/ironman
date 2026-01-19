@@ -94,4 +94,12 @@ Route::middleware('auth:sanctum')->group(function (): void {
 Route::middleware('auth:sanctum')->prefix('admin')->group(function (): void {
     Route::post('/users/{user}/link-profile/{profile}', [AdminController::class, 'linkProfileToUser'])
         ->name('v1.admin.users.link-profile');
+    
+    // Race results approval
+    Route::get('/race-results/pending', [AdminController::class, 'pendingRaceResults'])
+        ->name('v1.admin.race-results.pending');
+    Route::post('/race-results/{raceResult}/approve', [AdminController::class, 'approveRaceResult'])
+        ->name('v1.admin.race-results.approve');
+    Route::delete('/race-results/{raceResult}/reject', [AdminController::class, 'rejectRaceResult'])
+        ->name('v1.admin.race-results.reject');
 });

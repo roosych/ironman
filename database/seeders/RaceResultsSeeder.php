@@ -2827,6 +2827,8 @@ class RaceResultsSeeder extends Seeder
                     'age_group' => $result['age_group'] ?? null,
                     'overall_position' => $result['overall_position'] ?? null,
                     'age_group_position' => $result['age_group_position'] ?? null,
+                    'is_approved' => true,
+                    'approved_at' => now(),
                 ]
             );
 

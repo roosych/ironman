@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RaceResultResource;
+use App\Models\RaceResult;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Traits\ApiResponse;
@@ -68,6 +70,109 @@ class AdminController extends Controller
                     'ironman_number' => $profile->ironman_number,
                 ],
             ],
+        ]);
+    }
+
+    /**
+     * Check if current user is admin.
+     */
+    private function checkAdmin(): ?User
+    {
+        $admin = auth()->user();
+        if (! $admin || ! $admin->profile || ! $admin->profile->isAdmin()) {
+            return null;
+        }
+        return $admin;
+    }
+
+    /**
+     * Get list of pending race results (waiting for approval).
+     * 
+     * GET /api/v1/admin/race-results/pending
+     */
+    public function pendingRaceResults(): JsonResponse
+    {
+        $admin = $this->checkAdmin();
+        if (! $admin) {
+            return $this->errorResponse([
+                'message' => ['Доступ запрещён. Требуются права администратора.'],
+            ], 403);
+        }
+
+        $results = RaceResult::with(['profile.user', 'approver'])
+            ->where('is_approved', false)
+            ->orderBy('created_at')
+            ->paginate(15);
+
+        return $this->successResponse([
+            'data' => RaceResultResource::collection($results),
+            'meta' => [
+                'current_page' => $results->currentPage(),
+                'last_page' => $results->lastPage(),
+                'per_page' => $results->perPage(),
+                'total' => $results->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * Approve a race result.
+     * 
+     * POST /api/v1/admin/race-results/{raceResult}/approve
+     */
+    public function approveRaceResult(RaceResult $raceResult): JsonResponse
+    {
+        $admin = $this->checkAdmin();
+        if (! $admin) {
+            return $this->errorResponse([
+                'message' => ['Доступ запрещён. Требуются права администратора.'],
+            ], 403);
+        }
+
+        if ($raceResult->is_approved) {
+            return $this->errorResponse([
+                'message' => ['Результат уже подтверждён.'],
+            ], 422);
+        }
+
+        $raceResult->update([
+            'is_approved' => true,
+            'approved_at' => now(),
+            'approved_by' => $admin->id,
+        ]);
+
+        $raceResult->load(['profile.user', 'approver']);
+
+        return $this->successResponse([
+            'message' => 'Результат успешно подтверждён.',
+            'data' => RaceResultResource::make($raceResult),
+        ]);
+    }
+
+    /**
+     * Reject a race result (delete it).
+     * 
+     * DELETE /api/v1/admin/race-results/{raceResult}/reject
+     */
+    public function rejectRaceResult(RaceResult $raceResult): JsonResponse
+    {
+        $admin = $this->checkAdmin();
+        if (! $admin) {
+            return $this->errorResponse([
+                'message' => ['Доступ запрещён. Требуются права администратора.'],
+            ], 403);
+        }
+
+        if ($raceResult->is_approved) {
+            return $this->errorResponse([
+                'message' => ['Нельзя отклонить уже подтверждённый результат.'],
+            ], 422);
+        }
+
+        $raceResult->delete();
+
+        return $this->successResponse([
+            'message' => 'Результат отклонён и удалён.',
         ]);
     }
 }

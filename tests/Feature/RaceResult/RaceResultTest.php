@@ -16,7 +16,8 @@ class RaceResultTest extends TestCase
 
     public function test_can_list_all_race_results(): void
     {
-        RaceResult::factory()->count(3)->create();
+        RaceResult::factory()->approved()->count(3)->create();
+        RaceResult::factory()->count(2)->create(['is_approved' => false]); // Should not appear
 
         $response = $this->getJson('/api/v1/race-results');
 
@@ -49,8 +50,9 @@ class RaceResultTest extends TestCase
     public function test_can_get_profile_race_results(): void
     {
         $profile = UserProfile::factory()->create();
-        RaceResult::factory()->count(2)->create(['user_profile_id' => $profile->id]);
-        RaceResult::factory()->count(3)->create(); // other profiles' results
+        RaceResult::factory()->approved()->count(2)->create(['user_profile_id' => $profile->id]);
+        RaceResult::factory()->count(1)->create(['user_profile_id' => $profile->id, 'is_approved' => false]); // Should not appear
+        RaceResult::factory()->approved()->count(3)->create(); // other profiles' results
 
         $response = $this->getJson("/api/v1/profiles/{$profile->id}/race-results");
 
@@ -61,7 +63,7 @@ class RaceResultTest extends TestCase
 
     public function test_can_show_single_race_result(): void
     {
-        $result = RaceResult::factory()->create();
+        $result = RaceResult::factory()->approved()->create();
 
         $response = $this->getJson("/api/v1/race-results/{$result->id}");
 
@@ -113,12 +115,15 @@ class RaceResultTest extends TestCase
             ->assertJsonPath('data.location', 'Kona, Hawaii')
             ->assertJsonPath('data.race_type', 'ironman')
             ->assertJsonPath('data.swim_time', '01:12:45')
-            ->assertJsonPath('data.total_time', '10:22:20');
+            ->assertJsonPath('data.total_time', '10:22:20')
+            ->assertJsonPath('data.is_approved', false)
+            ->assertJsonPath('message', 'Результат отправлен на подтверждение администратором.');
 
         $this->assertDatabaseHas('race_results', [
             'user_profile_id' => $profile->id,
             'location' => 'Kona, Hawaii',
             'race_type' => 'ironman',
+            'is_approved' => false,
         ]);
     }
 
@@ -279,7 +284,7 @@ class RaceResultTest extends TestCase
 
     public function test_time_is_formatted_correctly_in_response(): void
     {
-        $result = RaceResult::factory()->create([
+        $result = RaceResult::factory()->approved()->create([
             'swim_time' => 3661,     // 1:01:01
             't1_time' => 61,         // 0:01:01
             'bike_time' => 7322,     // 2:02:02
@@ -303,15 +308,15 @@ class RaceResultTest extends TestCase
     {
         $profile = UserProfile::factory()->create();
 
-        RaceResult::factory()->create([
+        RaceResult::factory()->approved()->create([
             'user_profile_id' => $profile->id,
             'race_date' => '2023-01-01',
         ]);
-        RaceResult::factory()->create([
+        RaceResult::factory()->approved()->create([
             'user_profile_id' => $profile->id,
             'race_date' => '2024-06-15',
         ]);
-        RaceResult::factory()->create([
+        RaceResult::factory()->approved()->create([
             'user_profile_id' => $profile->id,
             'race_date' => '2022-05-20',
         ]);
@@ -324,5 +329,25 @@ class RaceResultTest extends TestCase
         $this->assertEquals('2024-06-15', $data[0]['race_date']);
         $this->assertEquals('2023-01-01', $data[1]['race_date']);
         $this->assertEquals('2022-05-20', $data[2]['race_date']);
+    }
+
+    public function test_unapproved_result_not_visible_in_public_api(): void
+    {
+        $result = RaceResult::factory()->create(['is_approved' => false]);
+
+        $response = $this->getJson("/api/v1/race-results/{$result->id}");
+
+        $response->assertStatus(404);
+    }
+
+    public function test_unapproved_result_not_in_list(): void
+    {
+        RaceResult::factory()->approved()->count(2)->create();
+        RaceResult::factory()->create(['is_approved' => false]);
+
+        $response = $this->getJson('/api/v1/race-results');
+
+        $response->assertOk()
+            ->assertJsonCount(2, 'data');
     }
 }

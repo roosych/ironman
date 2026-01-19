@@ -22,8 +22,13 @@ class UpcomingRaceController extends Controller
     {
         $query = UpcomingRace::with(['profile.user.avatar'])
             ->where('is_active', true)
-            ->where('race_date', '>=', now()->toDateString())
             ->orderBy('race_date');
+
+        // Filter by only_future parameter (default: true for backward compatibility)
+        $onlyFuture = $request->query('only_future', 'true');
+        if ($onlyFuture !== 'false') {
+            $query->where('race_date', '>=', now()->toDateString());
+        }
 
         if ($request->filled('user_profile_id')) {
             $query->where('user_profile_id', $request->query('user_profile_id'));

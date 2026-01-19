@@ -65,6 +65,27 @@ class UpcomingRaceTest extends TestCase
             ->assertJsonCount(1, 'data');
     }
 
+    public function test_only_future_parameter_filters_future_races(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create();
+
+        UpcomingRace::factory()->create([
+            'user_profile_id' => $profile->id,
+            'race_date' => now()->addMonth(),
+        ]);
+        UpcomingRace::factory()->past()->create([
+            'user_profile_id' => $profile->id,
+        ]);
+
+        // Default behavior (only_future=true or not specified) - only future races
+        $response = $this->getJson('/api/v1/upcoming-races?only_future=true');
+        $response->assertOk()->assertJsonCount(1, 'data');
+
+        // only_future=false - all races (future and past)
+        $response = $this->getJson('/api/v1/upcoming-races?only_future=false');
+        $response->assertOk()->assertJsonCount(2, 'data');
+    }
+
     public function test_upcoming_races_excludes_inactive(): void
     {
         $profile = UserProfile::factory()->athlete()->create();

@@ -55,6 +55,15 @@ class RaceResultResource extends JsonResource
             'age_group' => $this->when($this->age_group !== null, $this->age_group),
             'overall_position' => $this->when($this->overall_position !== null, $this->overall_position),
             'age_group_position' => $this->when($this->age_group_position !== null, $this->age_group_position),
+            'is_approved' => $this->is_approved,
+            'approved_at' => $this->when($this->approved_at !== null, $this->approved_at?->toISOString()),
+            'approved_by' => $this->when(
+                $this->relationLoaded('approver') && $this->approver !== null,
+                fn () => [
+                    'id' => $this->approver->id,
+                    'name' => $this->approver->name,
+                ]
+            ),
             // 'created_at' => $this->created_at->toISOString(),
         ];
     }

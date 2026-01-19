@@ -41,7 +41,19 @@ class RaceResultFactory extends Factory
             ]),
             'overall_position' => fake()->optional(0.7)->numberBetween(1, 2500),
             'age_group_position' => fake()->optional(0.7)->numberBetween(1, 300),
+            'is_approved' => false,
         ];
+    }
+
+    /**
+     * Set result as approved.
+     */
+    public function approved(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_approved' => true,
+            'approved_at' => now(),
+        ]);
     }
 
     /**

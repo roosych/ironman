@@ -18,10 +18,11 @@ class RaceResultController extends Controller
 {
     use ApiResponse;
 
-    /** Get all race results (paginated) */
+    /** Get all race results (paginated) - only approved */
     public function index(): JsonResponse
     {
         $results = RaceResult::with(['profile.user'])
+            ->where('is_approved', true)
             ->orderByDesc('race_date')
             ->paginate(15);
 
@@ -36,10 +37,11 @@ class RaceResultController extends Controller
         ]);
     }
 
-    /** Get race results for a specific profile */
+    /** Get race results for a specific profile - only approved */
     public function profileResults(UserProfile $userProfile): JsonResponse
     {
         $results = $userProfile->raceResults()
+            ->where('is_approved', true)
             ->with(['profile.user'])
             ->orderByDesc('race_date')
             ->get();
@@ -50,9 +52,13 @@ class RaceResultController extends Controller
         ]);
     }
 
-    /** Get a single race result */
+    /** Get a single race result - only if approved */
     public function show(RaceResult $raceResult): JsonResponse
     {
+        if (!$raceResult->is_approved) {
+            return $this->errorResponse(['message' => ['Результат не найден или не подтверждён.']], 404);
+        }
+
         $raceResult->load('profile.user');
 
         return $this->successResponse([
@@ -60,7 +66,7 @@ class RaceResultController extends Controller
         ]);
     }
 
-    /** Store a new race result */
+    /** Store a new race result - requires admin approval */
     public function store(StoreRaceResultRequest $request): JsonResponse
     {
         $profile = $request->user()->profile;
@@ -69,10 +75,14 @@ class RaceResultController extends Controller
             return $this->errorResponse(['profile' => ['Профиль не найден.']], 403);
         }
 
-        $raceResult = $profile->raceResults()->create($request->validated());
+        $data = $request->validated();
+        $data['is_approved'] = false; // Results require admin approval
+
+        $raceResult = $profile->raceResults()->create($data);
         $raceResult->load('profile.user');
 
         return $this->successResponse([
+            'message' => 'Результат отправлен на подтверждение администратором.',
             'data' => RaceResultResource::make($raceResult),
         ], 201);
     }
