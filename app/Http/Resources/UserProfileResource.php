@@ -27,11 +27,12 @@ class UserProfileResource extends JsonResource
             $stats = $statisticsService->calculatePersonalStats($this->resource);
         }
 
-        // Подсчитываем количество гонок типа Ironman
+        // Подсчитываем количество гонок типа Ironman (только одобренные)
         $ironmanRacesCount = 0;
         if ($this->relationLoaded('raceResults')) {
             $ironmanRacesCount = $this->raceResults
                 ->where('race_type', \App\Enums\RaceType::Ironman->value)
+                ->where('is_approved', true)
                 ->count();
         }
 

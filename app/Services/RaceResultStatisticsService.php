@@ -17,9 +17,16 @@ class RaceResultStatisticsService
      */
     public function calculatePersonalStats(UserProfile $profile): array
     {
-        $raceResults = $profile->raceResults()
-            ->orderBy('race_date', 'desc')
-            ->get();
+        // Если результаты уже загружены (например, при логине), используем их
+        // Иначе загружаем только одобренные результаты
+        if ($profile->relationLoaded('raceResults')) {
+            $raceResults = $profile->raceResults;
+        } else {
+            $raceResults = $profile->raceResults()
+                ->where('is_approved', true)
+                ->orderBy('race_date', 'desc')
+                ->get();
+        }
 
         if ($raceResults->isEmpty()) {
             return [

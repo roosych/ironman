@@ -31,15 +31,19 @@ class ProfileController extends Controller
     public function show(Request $request): JsonResponse
     {
         $user = $request->user();
-        // Загружаем профиль, фото пользователя и результаты гонок
-        $user->load(['profile', 'photos']);
+        $user->load(['photos']);
 
-        // Загружаем результаты гонок для профиля, если он существует
-        if ($user->profile) {
-            $user->profile->load(['raceResults' => function ($query) {
+        // Загружаем профиль без глобального scope для скрытого пользователя
+        $profile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
+            ->where('user_id', $user->id)
+            ->first();
+        
+        if ($profile) {
+            $user->setRelation('profile', $profile);
+            $profile->load(['raceResults' => function ($query) {
                 $query->orderByDesc('race_date');
             }]);
-            $user->profile->setRelation('user', $user);
+            $profile->setRelation('user', $user);
         }
 
         return $this->successResponse([

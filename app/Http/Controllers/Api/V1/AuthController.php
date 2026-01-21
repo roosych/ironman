@@ -11,6 +11,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Notifications\ResetPasswordNotification;
 use App\Notifications\VerifyEmailNotification;
 use App\Traits\ApiResponse;
@@ -31,14 +32,19 @@ class AuthController extends Controller
      */
     private function loadUserWithProfile(User $user): User
     {
-        $user->load(['profile', 'photos']);
+        $user->load(['photos']);
 
-        // Загружаем результаты гонок для профиля, если он существует
-        if ($user->profile) {
-            $user->profile->load(['raceResults' => function ($query) {
+        // Загружаем профиль без глобального scope для скрытого пользователя
+        $profile = \App\Models\UserProfile::withoutGlobalScope('hide_reviewer_profiles')
+            ->where('user_id', $user->id)
+            ->first();
+        
+        if ($profile) {
+            $user->setRelation('profile', $profile);
+            $profile->load(['raceResults' => function ($query) {
                 $query->orderByDesc('race_date');
             }]);
-            $user->profile->setRelation('user', $user);
+            $profile->setRelation('user', $user);
         }
 
         return $user;
@@ -49,12 +55,20 @@ class AuthController extends Controller
      */
     private function loadUserForLogin(User $user): User
     {
-        $user->load(['profile', 'photos']);
+        $user->load(['photos']);
 
-        // Загружаем результаты гонок для вычисления статистики, но не возвращаем их в ответе
-        if ($user->profile) {
-            $user->profile->load('raceResults'); // Загружаем без сортировки, только для статистики
-            $user->profile->setRelation('user', $user);
+        // Загружаем профиль без глобального scope для скрытого пользователя
+        $profile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
+            ->where('user_id', $user->id)
+            ->first();
+        
+        if ($profile) {
+            $user->setRelation('profile', $profile);
+            // Загружаем только одобренные результаты для статистики
+            $profile->load(['raceResults' => function ($query) {
+                $query->where('is_approved', true);
+            }]);
+            $profile->setRelation('user', $user);
         }
 
         return $user;
