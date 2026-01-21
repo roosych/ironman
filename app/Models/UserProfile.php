@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -60,5 +61,20 @@ class UserProfile extends Model
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Hide profiles, связанные с тестовым пользователем-ревьюером.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope('hide_reviewer_profiles', function (Builder $query) {
+            // Показываем профили без привязанного пользователя (seed данные) и скрываем только те,
+            // что связаны с ревьюером.
+            $query->where(function (Builder $q) {
+                $q->whereNull('user_id')
+                    ->orWhereHas('user', fn (Builder $u) => $u->where('is_reviewer', false));
+            });
+        });
     }
 }

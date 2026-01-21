@@ -89,14 +89,17 @@ class AuthController extends Controller
     /** Login user and create token */
     public function login(LoginRequest $request): JsonResponse
     {
-        if (! Auth::attempt($request->validated())) {
+        // Обходим глобальный scope для аутентификации, чтобы тестовый пользователь мог логиниться
+        $user = User::withoutGlobalScope('hide_reviewer')
+            ->where('email', $request->validated()['email'])
+            ->first();
+
+        if (! $user || ! Hash::check($request->validated()['password'], $user->password)) {
             return $this->errorResponse([
                 'email' => ['Неверный email или пароль.'],
             ], 401);
         }
 
-        /** @var User $user */
-        $user = Auth::user();
         $this->loadUserForLogin($user);
 
         // Remove all previous tokens
@@ -167,7 +170,10 @@ class AuthController extends Controller
     /** Send password reset link */
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->safe()->email)->first();
+        // Обходим глобальный scope для восстановления пароля
+        $user = User::withoutGlobalScope('hide_reviewer')
+            ->where('email', $request->safe()->email)
+            ->first();
 
         if ($user) {
             $token = Password::createToken($user);
@@ -180,43 +186,40 @@ class AuthController extends Controller
     /** Reset password */
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        // Обходим глобальный scope для поиска пользователя
+        $user = User::withoutGlobalScope('hide_reviewer')
+            ->where('email', $request->safe()->email)
+            ->first();
 
-                $user->tokens()->delete();
-
-                event(new PasswordReset($user));
-            }
-        );
-
-        // Обработка различных статусов ошибок
-        if ($status === Password::PASSWORD_RESET) {
-            return $this->successResponse([
-                'message' => 'Пароль успешно изменён.',
-            ]);
+        if (! $user) {
+            return $this->errorResponse([
+                'email' => ['Пользователь с таким email не найден.'],
+            ], 422);
         }
 
-        // Детальная обработка ошибок
-        $errorMessages = match ($status) {
-            Password::INVALID_TOKEN => [
+        // Проверяем токен через Password facade
+        if (! Password::tokenExists($user, $request->safe()->token)) {
+            return $this->errorResponse([
                 'token' => ['Неверный или истёкший токен сброса пароля. Пожалуйста, запросите новую ссылку для сброса пароля.'],
-            ],
-            Password::INVALID_USER => [
-                'email' => ['Пользователь с таким email не найден.'],
-            ],
-            Password::THROTTLED => [
-                'email' => ['Слишком много попыток. Пожалуйста, попробуйте позже.'],
-            ],
-            default => [
-                'email' => ['Не удалось сбросить пароль. Проверьте данные и попробуйте снова.'],
-            ],
-        };
+            ], 422);
+        }
 
-        return $this->errorResponse($errorMessages, 422);
+        // Сбрасываем пароль
+        $user->forceFill([
+            'password' => Hash::make($request->safe()->password),
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        // Удаляем все токены пользователя
+        $user->tokens()->delete();
+
+        // Удаляем токен сброса пароля
+        Password::deleteToken($user);
+
+        event(new PasswordReset($user));
+
+        return $this->successResponse([
+            'message' => 'Пароль успешно изменён.',
+        ]);
     }
 }

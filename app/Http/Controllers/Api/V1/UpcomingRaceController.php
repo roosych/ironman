@@ -24,6 +24,9 @@ class UpcomingRaceController extends Controller
             ->where('is_active', true)
             ->orderBy('race_date');
 
+        // Отсекаем записи без профиля заранее, чтобы не ловить null в маппере
+        $query->whereHas('profile');
+
         // Filter by only_future parameter (default: true for backward compatibility)
         $onlyFuture = $request->query('only_future', 'true');
         if ($onlyFuture !== 'false') {
@@ -40,19 +43,20 @@ class UpcomingRaceController extends Controller
 
         $races = $query->get();
 
-        $data = $races->map(fn (UpcomingRace $race) => [
-            'id' => $race->id,
-            'race_type' => $race->race_type->value,
-            'race_type_label' => $race->race_type->label(),
-            'location' => $race->location,
-            'race_date' => $race->race_date->toDateString(),
-            'is_active' => $race->is_active,
-            'created_by' => [
-                'id' => $race->profile->id,
-                'name' => $race->profile->user?->name ?? $race->profile->admin_full_name,
-                'avatar' => $race->profile->user?->avatar?->url,
-            ],
-        ]);
+        $data = $races->filter(fn (UpcomingRace $race) => $race->profile !== null)
+            ->map(fn (UpcomingRace $race) => [
+                'id' => $race->id,
+                'race_type' => $race->race_type->value,
+                'race_type_label' => $race->race_type->label(),
+                'location' => $race->location,
+                'race_date' => $race->race_date->toDateString(),
+                'is_active' => $race->is_active,
+                'created_by' => [
+                    'id' => $race->profile->id,
+                    'name' => $race->profile->user?->name ?? $race->profile->admin_full_name,
+                    'avatar' => $race->profile->user?->avatar?->url,
+                ],
+            ]);
 
         return $this->successResponse(['data' => $data]);
     }

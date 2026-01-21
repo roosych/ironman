@@ -11,6 +11,7 @@ use App\Http\Requests\Profile\UploadPhotoRequest;
 use App\Http\Resources\UserPhotoResource;
 use App\Http\Resources\UserProfileResource;
 use App\Http\Resources\UserResource;
+use App\Models\UserProfile;
 use App\Services\UserProfileService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -150,18 +151,28 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Проверка: у пользователя должен быть профиль
-        if (! $user->profile) {
+        // Достаем профиль без глобального скоупа (тестовый ревьюер тоже может запросить)
+        $profile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (! $profile) {
             return $this->errorResponse([
                 'profile' => ['Профиль не найден.'],
             ], 404);
         }
 
         // Отмечаем запрос на синхронизацию
-        $user->profile->update(['sync_requested' => true]);
+        $profile->update(['sync_requested' => true]);
+        
+        // Обновляем модель для возврата актуального значения
+        $profile->refresh();
 
         return $this->successResponse([
-            'message' => 'Запрос на синхронизацию результатов отправлен администратору. Мы свяжемся с вами в ближайшее время.',
+            'message' => 'Запрос на синхронизацию результатов отправлен',
+            'data' => [
+                'sync_requested' => $profile->sync_requested,
+            ],
         ]);
     }
 }

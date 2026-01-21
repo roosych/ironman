@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\User;
 
+use App\Events\PasswordChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\ChangePasswordRequest;
 use App\Traits\ApiResponse;
@@ -36,6 +37,9 @@ class PasswordController extends Controller
         // Invalidate all tokens except the current one
         $currentTokenId = $user->currentAccessToken()->id;
         $user->tokens()->where('id', '!=', $currentTokenId)->delete();
+
+        // Dispatch event for FCM notification
+        event(new PasswordChanged($user));
 
         return $this->successResponse([
             'message' => 'Password updated successfully',

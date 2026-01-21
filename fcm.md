@@ -1,244 +1,213 @@
-🔔 TASK: Внедрение Firebase Cloud Messaging (FCM) в Laravel API
-🎯 Цель
-
-Реализовать серверную поддержку push-уведомлений через Firebase Cloud Messaging для мобильного приложения (Flutter).
-
-Backend должен:
-
-хранить FCM-токены устройств
-
-отправлять push-уведомления конкретному пользователю
-
-поддерживать multiple devices (несколько токенов на одного юзера)
-
-корректно инвалидировать токены
-
-быть готовым к расширению (массовые уведомления, события, админка)
-
-🧱 Технологии и ограничения
+Backend: Notifications system + FCM (Laravel)
+Контекст проекта
 
 Backend: Laravel
 
 Auth: Laravel Sanctum
 
-Клиент: Flutter
+Push: Firebase Cloud Messaging
 
-Push provider: Firebase Cloud Messaging
+FCM пакет уже установлен
 
-HTTP v1 API (НЕ legacy)
+Jobs / Actions в проекте есть, но нужно проверить корректность и при необходимости доработать
 
-📁 Этап 1. Firebase проект
+Уведомления нужны для мобильного приложения
+
+Уведомления должны сохраняться в БД, а FCM использоваться только как транспорт доставки
+
+🎯 Цель
+
+Реализовать полноценную систему уведомлений:
+
+хранение уведомлений в базе
+
+API для мобильного клиента
+
+интеграция с FCM
+
+поддержка unread / read
+
+возможность навигации по data payload
+
+1️⃣ Миграции и модели
+Создать миграцию notifications
+notifications
+- id
+- user_id (FK → users.id, cascade)
+- title (string)
+- body (text)
+- type (string) // system, race, result, upcoming, admin
+- data (json, nullable) // race_id, profile_id, screen, etc
+- read_at (timestamp, nullable)
+- created_at
+- updated_at
+
+Создать модель Notification
+
+$fillable: user_id, title, body, type, data, read_at
+
+$casts: data => array, read_at => datetime
+
+Связь:
+
+Notification belongsTo User
+
+
+Добавить в User:
+
+public function notifications(): HasMany
+
+2️⃣ API Endpoints (Sanctum protected)
+Получить список уведомлений
+GET /api/v1/notifications
+
+
 Требования:
 
-Создать Firebase Project
+только для авторизованного пользователя
 
-Включить Cloud Messaging
+сортировка: latest()
 
-Сгенерировать Service Account JSON
+пагинация (15)
 
-Сохранить credentials:
+вернуть unread_count
 
-НЕ коммитить в git
+Пример ответа:
 
-хранить через .env или storage/app/firebase/
-
-📁 Этап 2. Конфигурация Laravel
-Добавить переменные окружения
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_CREDENTIALS=storage/app/firebase/firebase.json
-
-Создать config файл
-
-config/firebase.php
-
-return [
-    'project_id' => env('FIREBASE_PROJECT_ID'),
-    'credentials' => env('FIREBASE_CREDENTIALS'),
-];
-
-📁 Этап 3. Таблица FCM токенов
-Миграция
-
-Создать таблицу fcm_tokens:
-
-Schema::create('fcm_tokens', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-    $table->string('token')->unique();
-    $table->string('device_type')->nullable(); // android / ios
-    $table->string('device_name')->nullable();
-    $table->timestamps();
-});
-
-Модель
-
-App\Models\FcmToken.php
-
-class FcmToken extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'token',
-        'device_type',
-        'device_name',
-    ];
-}
-
-📁 Этап 4. API для регистрации FCM токена
-Endpoint
-POST /api/v1/user/fcm-token
-
-Body
-{
-  "token": "fcm_device_token",
-  "device_type": "android",
-  "device_name": "Pixel 7"
-}
-
-Поведение:
-
-Требует авторизацию (Sanctum)
-
-Один и тот же токен не дублировать
-
-При повторной отправке — обновлять updated_at
-
-Controller
-
-UserFcmTokenController@store
-
-Логика:
-
-updateOrCreate по token
-
-Привязывать к текущему auth()->id()
-
-📁 Этап 5. Удаление FCM токена (logout)
-Endpoint
-DELETE /api/v1/user/fcm-token
-
-Body
-{
-  "token": "fcm_device_token"
-}
-
-Использовать при:
-
-Logout
-
-App uninstall / token refresh
-
-📁 Этап 6. Сервис отправки push-уведомлений
-Создать сервис
-
-App\Services\Firebase\FcmService.php
-
-Ответственность:
-
-Получать OAuth2 access token
-
-Отправлять HTTP v1 запросы в FCM
-
-Обрабатывать ошибки (invalid token)
-
-Метод отправки
-sendToToken(string $token, array $notification, array $data = [])
-
-sendToUser(User $user, array $notification, array $data = [])
-
-Пример payload
-{
-  "message": {
-    "token": "FCM_TOKEN",
-    "notification": {
-      "title": "New race added",
-      "body": "Your upcoming race is confirmed"
-    },
-    "data": {
-      "type": "race",
-      "race_id": "12"
-    }
+  "success": true,
+  "data": [...],
+  "meta": {
+    "unread_count": 3
   }
 }
 
-📁 Этап 7. Инвалидация токенов
-Требования:
-
-Если FCM возвращает:
-
-UNREGISTERED
-
-INVALID_ARGUMENT
-
-→ удалить токен из базы
-
-📁 Этап 8. Событийная архитектура (обязательно)
-Создать события:
-
-RaceCreated
-
-RaceApproved
-
-ProfileSynced
-
-PasswordChanged
-
-Listener:
-
-Отправка push-уведомлений через FcmService
-
-📁 Этап 9. Массовые уведомления (подготовка)
-
-Реализовать метод:
-
-sendToMany(array $tokens, array $notification, array $data = [])
+Пометить уведомление как прочитанное
+POST /api/v1/notifications/{id}/read
 
 
-(реализация может быть deferred)
+Проверять, что уведомление принадлежит пользователю
 
-📁 Этап 10. Безопасность и best practices
-Обязательно:
+Записывать read_at = now()
 
-❌ Не хранить Firebase credentials в git
+Пометить все как прочитанные
+POST /api/v1/notifications/read-all
 
-❌ Не отправлять push напрямую из контроллеров
+3️⃣ FCM integration (проверить и доработать)
+Проверить:
 
-✅ Использовать сервисный слой
+Где и как хранится fcm_token
 
-✅ Использовать очереди (Laravel Queue) для отправки
+Есть ли:
 
-📁 Этап 11. Очереди (опционально, но желательно)
+users.fcm_token или
 
-Отправку push выносить в Job
+отдельная таблица user_devices
 
-Использовать ShouldQueue
+👉 Если нет — реализовать user_devices:
 
-✅ Acceptance Criteria
+user_devices
+- id
+- user_id
+- fcm_token
+- platform (android / ios)
+- last_used_at
+- created_at
 
-Пользователь может получать push на несколько устройств
+API для регистрации FCM токена
+POST /api/v1/devices
+{
+  "fcm_token": "...",
+  "platform": "android"
+}
 
-Токены корректно удаляются
 
-Backend готов к:
+token должен быть уникальным
 
-персональным уведомлениям
+один пользователь → много устройств
 
-массовым уведомлениям
+4️⃣ Архитектура отправки уведомлений
+Создать Action
+App\Actions\Notifications\SendNotificationAction
 
-расширению под админку
 
-Код чистый, расширяемый, без логики в контроллерах
+Вход:
 
-🧠 Примечание для Flutter
+(user, title, body, type, data = [])
 
-Backend не отвечает за:
 
-Permission request
+Логика:
 
-Token refresh handling
+Создать запись в notifications
 
-Flutter обязан:
+Отправить FCM push всем устройствам пользователя
 
-отправлять FCM token после логина
+Использовать data payload, не только notification
 
-обновлять токен при onTokenRefresh
+Использовать Job
+SendNotificationJob
+
+
+Job должен быть ShouldQueue
+
+Action вызывается из Job
+
+Job должен быть безопасным (retry, timeout)
+
+5️⃣ FCM Payload (обязательно)
+{
+  "notification": {
+    "title": "Новая гонка",
+    "body": "Вы добавили upcoming Ironman"
+  },
+  "data": {
+    "type": "race",
+    "race_id": "12",
+    "screen": "race_details"
+  }
+}
+
+6️⃣ Использование в системе (пример)
+
+При создании upcoming гонки:
+
+создателю → уведомление
+
+позже (в будущем) → подписчикам
+
+SendNotificationAction::run(
+  $user,
+  'Новая гонка',
+  'Вы добавили upcoming Ironman',
+  'upcoming',
+  ['race_id' => $race->id]
+);
+
+7️⃣ Безопасность и best practices
+
+Уведомления доступны только владельцу
+
+FCM ошибки логировать, но не ломать Job
+
+При logout:
+
+можно удалять device
+
+При смене пароля:
+
+Sanctum уже инвалидирует токены (OK)
+
+8️⃣ Что НЕ делать
+
+❌ Не хранить уведомления только в FCM
+❌ Не полагаться на push как источник данных
+❌ Не возвращать уведомления без пагинации
+
+9️⃣ Definition of Done
+
+✅ Миграции применяются
+✅ API работает
+✅ Уведомления сохраняются в БД
+✅ Push уходит через FCM
+✅ Unread / Read работает
+✅ Архитектура готова к масштабированию

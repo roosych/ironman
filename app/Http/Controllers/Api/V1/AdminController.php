@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\ProfileSynced;
+use App\Events\RaceApproved;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RaceResultResource;
 use App\Models\RaceResult;
@@ -55,6 +57,9 @@ class AdminController extends Controller
         if (! $profile->admin_full_name) {
             $profile->update(['admin_full_name' => $user->name]);
         }
+
+        // Dispatch event for FCM notification
+        event(new ProfileSynced($user, $profile));
 
         return $this->successResponse([
             'message' => 'Профиль успешно привязан к пользователю.',
@@ -142,6 +147,9 @@ class AdminController extends Controller
         ]);
 
         $raceResult->load(['profile.user', 'approver']);
+
+        // Dispatch event for FCM notification
+        event(new RaceApproved($raceResult));
 
         return $this->successResponse([
             'message' => 'Результат успешно подтверждён.',

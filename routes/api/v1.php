@@ -5,9 +5,11 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AthleteController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\RaceResultController;
 use App\Http\Controllers\Api\V1\RankingController;
 use App\Http\Controllers\Api\V1\UpcomingRaceController;
+use App\Http\Controllers\Api\V1\User\FcmTokenController;
 use App\Http\Controllers\Api\V1\User\PasswordController;
 use App\Http\Controllers\Api\V1\User\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +51,21 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
     Route::get('/photos', [ProfileController::class, 'getPhotos'])->name('v1.user.photos.index');
     Route::post('/photos', [ProfileController::class, 'uploadPhotos'])->name('v1.user.photos.upload');
     Route::delete('/photos/{photoId}', [ProfileController::class, 'deletePhoto'])->name('v1.user.photos.delete');
+
+    // FCM Tokens
+    Route::post('/fcm-token', [FcmTokenController::class, 'store'])->name('v1.user.fcm-token.store');
+    Route::delete('/fcm-token', [FcmTokenController::class, 'destroy'])->name('v1.user.fcm-token.destroy');
+});
+
+// Protected notifications routes
+Route::middleware('auth:sanctum')->prefix('notifications')->group(function (): void {
+    Route::get('/', [NotificationController::class, 'index'])->name('v1.notifications.index');
+    Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('v1.notifications.read');
+    Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('v1.notifications.read-all');
+    Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('v1.notifications.destroy');
+    
+    // Test endpoint (development only)
+    Route::post('/test', [NotificationController::class, 'sendTest'])->name('v1.notifications.test');
 });
 
 // Public athletes routes
