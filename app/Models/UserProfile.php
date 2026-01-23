@@ -22,15 +22,14 @@ class UserProfile extends Model
         'ironman_number',
         'bio',
         'social_links',
-        'sync_requested',
-        'synced_existing_profile',
+        'code',
+        'code_used',
     ];
 
     protected $casts = [
         'ironman_number' => 'integer',
         'social_links' => 'array',
-        'sync_requested' => 'boolean',
-        'synced_existing_profile' => 'boolean',
+        'code_used' => 'boolean',
     ];
 
     public function user(): BelongsTo

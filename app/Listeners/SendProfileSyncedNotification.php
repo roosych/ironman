@@ -19,8 +19,7 @@ class SendProfileSyncedNotification implements ShouldQueue
 
         SendNotificationAction::dispatch(
             $user,
-            'Профиль синхронизирован',
-            'Ваш профиль успешно привязан к аккаунту.',
+            'profile_synced',
             'profile',
             [
                 'profile_id' => $event->profile->id,

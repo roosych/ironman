@@ -82,22 +82,33 @@ class SendTestNotification extends Command
         $this->line("Type: {$type}");
 
         try {
+            $data = [
+                'test' => 'true',
+                'timestamp' => now()->toIso8601String(),
+            ];
+
+            // For test notifications, create directly (bypass translation system)
+            $notification = \App\Models\Notification::create([
+                'user_id' => $user->id,
+                'title' => $title,
+                'body' => $body,
+                'type' => $type,
+                'data' => $data,
+            ]);
+
             if ($this->option('sync')) {
                 // Синхронная отправка (для тестирования)
-                $action = app(SendNotificationAction::class);
-                $notification = $action->run($user, $title, $body, $type, [
-                    'test' => 'true',
-                    'timestamp' => now()->toIso8601String(),
-                ]);
+                $fcmService = app(\App\Services\Firebase\FcmService::class);
+                $fcmService->sendToUser($user, [
+                    'title' => $title,
+                    'body' => $body,
+                ], array_merge(['type' => $type], array_map('strval', $data)));
 
                 $this->info("✅ Notification sent synchronously!");
                 $this->line("Notification ID: {$notification->id}");
             } else {
                 // Асинхронная отправка через очередь
-                SendNotificationAction::dispatch($user, $title, $body, $type, [
-                    'test' => 'true',
-                    'timestamp' => now()->toIso8601String(),
-                ]);
+                \App\Jobs\SendNotificationJob::dispatch($notification->id);
 
                 $this->info("✅ Notification queued!");
                 $this->warn("Make sure queue worker is running: php artisan queue:work");

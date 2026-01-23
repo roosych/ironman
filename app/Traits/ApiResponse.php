@@ -13,11 +13,17 @@ trait ApiResponse
         return response()->json(array_merge(['success' => true], $data), $status);
     }
 
-    protected function errorResponse(array $errors = [], int $status = 400): JsonResponse
+    protected function errorResponse(array $errors = [], int $status = 400, ?string $errorCode = null): JsonResponse
     {
-        return response()->json([
+        $response = [
             'success' => false,
             'errors' => $errors,
-        ], $status);
+        ];
+
+        if ($errorCode !== null) {
+            $response['error_code'] = $errorCode;
+        }
+
+        return response()->json($response, $status);
     }
 }

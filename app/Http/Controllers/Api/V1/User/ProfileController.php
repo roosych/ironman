@@ -40,8 +40,10 @@ class ProfileController extends Controller
         
         if ($profile) {
             $user->setRelation('profile', $profile);
+            // Load only approved race results
             $profile->load(['raceResults' => function ($query) {
-                $query->orderByDesc('race_date');
+                $query->where('is_approved', true)
+                    ->orderByDesc('race_date');
             }]);
             $profile->setRelation('user', $user);
         }
@@ -147,36 +149,121 @@ class ProfileController extends Controller
         ]);
     }
 
+
     /**
-     * Request synchronization of race results.
-     * User requests admin to link existing profile with results.
+     * Link an existing profile to the authenticated user by code.
      */
-    public function requestSync(Request $request): JsonResponse
+    public function link(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'size:6', 'regex:/^[1-9A-HJ-NP-Za-hj-np-z]{6}$/i'],
+        ]);
+
         $user = $request->user();
 
-        // Достаем профиль без глобального скоупа (тестовый ревьюер тоже может запросить)
-        $profile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
+        // Проверяем, что у пользователя еще нет профиля
+        $existingProfile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
             ->where('user_id', $user->id)
             ->first();
 
-        if (! $profile) {
+        if ($existingProfile) {
             return $this->errorResponse([
-                'profile' => ['Профиль не найден.'],
-            ], 404);
+                'profile' => ['PROFILE_ALREADY_EXISTS'],
+            ], 422, 'PROFILE_ALREADY_EXISTS');
         }
 
-        // Отмечаем запрос на синхронизацию
-        $profile->update(['sync_requested' => true]);
-        
-        // Обновляем модель для возврата актуального значения
-        $profile->refresh();
+        // Приводим код к верхнему регистру для поиска
+        $code = strtoupper($validated['code']);
+
+        // Получаем профиль по коду
+        $profile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
+            ->where('code', $code)
+            ->where('role', 'athlete')
+            ->first();
+
+        if (!$profile) {
+            return $this->errorResponse([
+                'code' => ['CODE_NOT_FOUND'],
+            ], 404, 'CODE_NOT_FOUND');
+        }
+
+        // Проверяем, что код еще не использован
+        if ($profile->code_used) {
+            return $this->errorResponse([
+                'code' => ['CODE_ALREADY_USED'],
+            ], 422, 'CODE_ALREADY_USED');
+        }
+
+        // Проверяем, что профиль не привязан к другому пользователю
+        if ($profile->user_id !== null) {
+            return $this->errorResponse([
+                'code' => ['CODE_ALREADY_LINKED'],
+            ], 422, 'CODE_ALREADY_LINKED');
+        }
+
+        // Привязываем профиль к пользователю и отмечаем код как использованный
+        $profile->update([
+            'user_id' => $user->id,
+            'code_used' => true,
+        ]);
+
+        // Обновляем admin_full_name из имени пользователя, если не установлено
+        if (!$profile->admin_full_name) {
+            $profile->update(['admin_full_name' => $user->name]);
+        }
+
+        // Загружаем профиль с проверенными результатами для ответа
+        $profile->load(['raceResults' => function ($query) {
+            $query->where('is_approved', true)
+                ->orderByDesc('race_date');
+        }]);
+        $profile->setRelation('user', $user);
+        $user->setRelation('profile', $profile);
+
+        // Dispatch event for FCM notification
+        event(new \App\Events\ProfileSynced($user, $profile));
 
         return $this->successResponse([
-            'message' => 'Запрос на синхронизацию результатов отправлен',
+            'message' => 'PROFILE_LINKED_SUCCESS',
             'data' => [
-                'sync_requested' => $profile->sync_requested,
+                'profile' => UserProfileResource::make($profile),
             ],
         ]);
+    }
+
+    /**
+     * Create a new empty profile for the authenticated user.
+     */
+    public function create(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        // Проверяем, что у пользователя еще нет профиля
+        $existingProfile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($existingProfile) {
+            return $this->errorResponse([
+                'profile' => ['PROFILE_ALREADY_EXISTS'],
+            ], 422, 'PROFILE_ALREADY_EXISTS');
+        }
+
+        // Создаем новый пустой профиль
+        $profile = UserProfile::create([
+            'user_id' => $user->id,
+            'admin_full_name' => $user->name,
+            'role' => 'athlete',
+        ]);
+
+        $profile->setRelation('user', $user);
+        $user->setRelation('profile', $profile);
+
+        return $this->successResponse([
+            'message' => 'PROFILE_CREATED_SUCCESS',
+            'data' => [
+                'profile' => UserProfileResource::make($profile),
+            ],
+        ], 201);
     }
 }

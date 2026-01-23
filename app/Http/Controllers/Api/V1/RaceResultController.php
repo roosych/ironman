@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Events\RaceCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RaceResult\DeleteRaceResultRequest;
 use App\Http\Requests\RaceResult\StoreRaceResultRequest;
@@ -81,9 +80,6 @@ class RaceResultController extends Controller
 
         $raceResult = $profile->raceResults()->create($data);
         $raceResult->load('profile.user');
-
-        // Dispatch event for FCM notification
-        event(new RaceCreated($raceResult));
 
         return $this->successResponse([
             'message' => 'Результат отправлен на подтверждение администратором.',

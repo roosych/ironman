@@ -28,6 +28,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'is_reviewer',
+        'is_admin',
+        'locale',
     ];
 
     /**
@@ -51,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_reviewer' => 'boolean',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -77,6 +80,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
+    }
+
+    /**
+     * Check if user is admin.
+     * User is admin if is_admin is true OR profile has admin role.
+     */
+    public function isAdmin(): bool
+    {
+        if ($this->is_admin) {
+            return true;
+        }
+
+        $profile = $this->profile;
+        return $profile && $profile->isAdmin();
     }
 
     /**

@@ -136,8 +136,22 @@ class NotificationController extends Controller
         }
 
         // Отправка синхронно для тестирования
+        // Для тестовых уведомлений используем прямые значения (не переводы)
         $action = app(SendNotificationAction::class);
-        $notification = $action->run($user, $title, $body, $type, $data);
+        $notification = \App\Models\Notification::create([
+            'user_id' => $user->id,
+            'title' => $title,
+            'body' => $body,
+            'type' => $type,
+            'data' => $data,
+        ]);
+
+        // Отправляем FCM напрямую для теста
+        $fcmService = app(\App\Services\Firebase\FcmService::class);
+        $fcmService->sendToUser($user, [
+            'title' => $title,
+            'body' => $body,
+        ], array_merge(['type' => $type], array_map('strval', $data)));
 
         return $this->successResponse([
             'message' => "Тестовое уведомление отправлено на {$tokenCount} устройство(а).",

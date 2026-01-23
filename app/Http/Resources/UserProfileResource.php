@@ -36,6 +36,9 @@ class UserProfileResource extends JsonResource
                 ->count();
         }
 
+        // Приводим code_used к boolean (null = false)
+        $codeUsed = (bool) $this->code_used;
+
         $data = [
             'id' => $this->id,
             'role' => $this->role,
@@ -47,9 +50,13 @@ class UserProfileResource extends JsonResource
                 'instagram' => null,
                 'facebook' => null,
             ],
-            'sync_requested' => $this->sync_requested,
-            'synced_existing_profile' => $this->synced_existing_profile,
+            'code_used' => $codeUsed,
         ];
+
+        // Возвращаем код только если он еще не использован и существует
+        if (!$codeUsed && $this->code) {
+            $data['code'] = $this->code;
+        }
 
         // Photos - всегда объект (пустой {} или с данными)
         if ($user && $user->relationLoaded('photos')) {
@@ -60,8 +67,10 @@ class UserProfileResource extends JsonResource
         }
 
         // Race results - только если не исключены и загружены
+        // Фильтруем только проверенные результаты (is_approved = true)
         if ($this->relationLoaded('raceResults') && ! $request->boolean('exclude_race_results')) {
-            $data['race_results'] = RaceResultResource::collection($this->raceResults)
+            $approvedResults = $this->raceResults->where('is_approved', true);
+            $data['race_results'] = RaceResultResource::collection($approvedResults)
                 ->map(fn (RaceResultResource $r) => $r->withoutProfileId());
         }
 

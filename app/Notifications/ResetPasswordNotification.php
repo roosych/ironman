@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\App;
 
 class ResetPasswordNotification extends Notification implements ShouldQueue
 {
@@ -24,16 +25,34 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $resetUrl = $this->resetUrl($notifiable);
+        // Always fetch fresh locale from database before sending email
+        // Refresh user model to ensure we have the latest locale value
+        try {
+            $notifiable->refresh();
+            $locale = $notifiable->locale ?? config('app.locale', 'en');
+        } catch (\Exception $e) {
+            // If refresh fails, use default locale
+            $locale = config('app.locale', 'en');
+        }
+        
+        $originalLocale = App::getLocale();
+        App::setLocale($locale);
 
-        return (new MailMessage)
-            ->subject('Сброс пароля')
-            ->greeting('Здравствуйте!')
-            ->line('Вы получили это письмо, потому что мы получили запрос на сброс пароля для вашего аккаунта.')
-            ->action('Сбросить пароль', $resetUrl)
-            ->line('Ссылка для сброса пароля истечёт через '.config('auth.passwords.users.expire').' минут.')
-            ->line('Если вы не запрашивали сброс пароля, никаких дальнейших действий не требуется.')
-            ->salutation('С уважением, команда '.config('app.name'));
+        $resetUrl = $this->resetUrl($notifiable);
+        $expireMinutes = config('auth.passwords.users.expire', 60);
+
+        $message = (new MailMessage)
+            ->subject(trans('emails.reset_password.subject'))
+            ->greeting(trans('emails.reset_password.greeting'))
+            ->line(trans('emails.reset_password.line'))
+            ->action(trans('emails.reset_password.action'), $resetUrl)
+            ->line(trans('emails.reset_password.expire_line', ['minutes' => $expireMinutes]))
+            ->line(trans('emails.reset_password.footer'))
+            ->salutation(trans('emails.reset_password.salutation', ['app_name' => config('app.name')]));
+
+        App::setLocale($originalLocale);
+
+        return $message;
     }
 
     protected function resetUrl(object $notifiable): string

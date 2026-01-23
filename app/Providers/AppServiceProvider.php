@@ -7,12 +7,10 @@ namespace App\Providers;
 use App\Events\PasswordChanged;
 use App\Events\ProfileSynced;
 use App\Events\RaceApproved;
-use App\Events\RaceCreated;
 use App\Listeners\SendPasswordChangedNotification;
 use App\Models\PersonalAccessToken;
 use App\Listeners\SendProfileSyncedNotification;
 use App\Listeners\SendRaceApprovedNotification;
-use App\Listeners\SendRaceCreatedNotification;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -24,9 +22,6 @@ class AppServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        RaceCreated::class => [
-            SendRaceCreatedNotification::class,
-        ],
         RaceApproved::class => [
             SendRaceApprovedNotification::class,
         ],

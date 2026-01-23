@@ -24,6 +24,7 @@ class Notification extends Model
         'type',
         'data',
         'read_at',
+        'translations',
     ];
 
     /**
@@ -35,8 +36,35 @@ class Notification extends Model
     {
         return [
             'data' => 'array',
+            'translations' => 'array',
             'read_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get title in specified locale or fallback to stored title.
+     */
+    public function getTitle(?string $locale = null): string
+    {
+        if ($locale && $this->translations && isset($this->translations[$locale]['title'])) {
+            return $this->translations[$locale]['title'];
+        }
+
+        // Fallback to stored title (for backward compatibility)
+        return $this->title;
+    }
+
+    /**
+     * Get body in specified locale or fallback to stored body.
+     */
+    public function getBody(?string $locale = null): string
+    {
+        if ($locale && $this->translations && isset($this->translations[$locale]['body'])) {
+            return $this->translations[$locale]['body'];
+        }
+
+        // Fallback to stored body (for backward compatibility)
+        return $this->body;
     }
 
     /**

@@ -49,8 +49,6 @@ class AdminController extends Controller
         // Привязываем профиль к пользователю
         $profile->update([
             'user_id' => $user->id,
-            'synced_existing_profile' => true,
-            'sync_requested' => false,
         ]);
 
         // Обновляем admin_full_name из имени пользователя, если не установлено

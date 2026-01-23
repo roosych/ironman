@@ -24,8 +24,7 @@ class SendRaceCreatedNotification implements ShouldQueue
 
         SendNotificationAction::dispatch(
             $user,
-            'Новый результат гонки',
-            'Ваш результат отправлен на подтверждение администратором.',
+            'race_created',
             'race',
             [
                 'race_id' => $raceResult->id,

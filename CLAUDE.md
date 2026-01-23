@@ -46,6 +46,165 @@ return $this->successResponse(['data' => $resource]);
 return $this->errorResponse(['field' => ['Error message']], 422);
 ```
 
+## API Localization (CRITICAL!)
+
+**ALL API responses MUST be localized!** All success messages, error messages, and validation errors must be automatically translated based on the user's language.
+
+### How It Works
+
+1. **Language Detection Priority:**
+   - Authenticated user's `locale` field (if available)
+   - `locale` parameter in request body
+   - `Accept-Language` HTTP header
+   - Default locale (`en`)
+
+2. **Translation Files:**
+   - `lang/ru/api.php` - Russian translations
+   - `lang/en/api.php` - English translations
+   - Add new translation keys as needed
+
+3. **Implementation Pattern:**
+
+```php
+use Illuminate\Support\Facades\App;
+
+class YourController extends Controller
+{
+    use ApiResponse;
+
+    /**
+     * Get locale for response translation.
+     */
+    private function getResponseLocale(Request $request): string
+    {
+        $user = $request->user();
+        if ($user && $user->locale) {
+            return $user->locale;
+        }
+
+        // Detect from request (see AuthController::detectLocale() for full implementation)
+        return $request->input('locale') 
+            ?? $this->detectLocaleFromHeader($request) 
+            ?? config('app.locale', 'en');
+    }
+
+    /**
+     * Translate message using request locale.
+     */
+    private function trans(Request $request, string $key, array $params = []): string
+    {
+        $locale = $this->getResponseLocale($request);
+        $originalLocale = App::getLocale();
+        App::setLocale($locale);
+
+        $translated = trans($key, $params);
+
+        App::setLocale($originalLocale);
+
+        return $translated;
+    }
+
+    public function store(StoreRequest $request): JsonResponse
+    {
+        $resource = Resource::create($request->validated());
+
+        return $this->successResponse([
+            'message' => $this->trans($request, 'api.resource.created'), // ← Localized!
+            'data' => ResourceResource::make($resource),
+        ], 201);
+    }
+
+    public function update(UpdateRequest $request, Resource $resource): JsonResponse
+    {
+        if (!$this->authorize('update', $resource)) {
+            return $this->errorResponse([
+                'resource' => [$this->trans($request, 'api.resource.unauthorized')], // ← Localized!
+            ], 403);
+        }
+
+        $resource->update($request->validated());
+
+        return $this->successResponse([
+            'message' => $this->trans($request, 'api.resource.updated'), // ← Localized!
+            'data' => ResourceResource::make($resource),
+        ]);
+    }
+}
+```
+
+### Security Considerations
+
+1. **Login Errors:** Always return the same generic error message to prevent email enumeration:
+   ```php
+   // Always return: "Invalid email or password." (localized)
+   return $this->errorResponse([
+       'email' => [$this->trans($request, 'api.auth.invalid_credentials')],
+   ], 401);
+   ```
+
+2. **Password Reset:** Always return the same success message regardless of email existence:
+   ```php
+   // Always return: "Password reset email sent." (localized)
+   // Don't reveal if email exists or not
+   return $this->successResponse([
+       'message' => $this->trans($request, 'api.password.reset_link_sent'),
+   ]);
+   ```
+
+### Required Steps for New Endpoints
+
+1. **Add translation keys** to `lang/ru/api.php` and `lang/en/api.php`:
+   ```php
+   // lang/ru/api.php
+   'resource' => [
+       'created' => 'Ресурс успешно создан.',
+       'updated' => 'Ресурс успешно обновлён.',
+       'deleted' => 'Ресурс успешно удалён.',
+       'not_found' => 'Ресурс не найден.',
+       'unauthorized' => 'У вас нет доступа к этому ресурсу.',
+   ],
+
+   // lang/en/api.php
+   'resource' => [
+       'created' => 'Resource successfully created.',
+       'updated' => 'Resource successfully updated.',
+       'deleted' => 'Resource successfully deleted.',
+       'not_found' => 'Resource not found.',
+       'unauthorized' => 'You do not have access to this resource.',
+   ],
+   ```
+
+2. **Use `trans()` method** in controller for all messages:
+   ```php
+   'message' => $this->trans($request, 'api.resource.created')
+   ```
+
+3. **Localize validation errors** in Form Requests (if custom messages needed):
+   ```php
+   // In FormRequest
+   public function messages(): array
+   {
+       $locale = $this->user()?->locale ?? config('app.locale', 'en');
+       App::setLocale($locale);
+       
+       $messages = [
+           'title.required' => trans('validation.required', ['attribute' => 'title']),
+           // ...
+       ];
+       
+       App::setLocale(config('app.locale', 'en'));
+       return $messages;
+   }
+   ```
+
+### Existing Examples
+
+- `App\Http\Controllers\Api\V1\AuthController` - Full implementation with `getResponseLocale()` and `trans()` methods
+- `App\Http\Controllers\Api\V1\User\PasswordController` - Localized password change messages
+- `lang/ru/api.php` and `lang/en/api.php` - Translation files structure
+
+**Remember:** Mobile clients expect ALL messages to be pre-translated. Never return hardcoded English/Russian strings - always use translation keys!
+
 ## Architecture
 
 ### API Structure (Versioned)

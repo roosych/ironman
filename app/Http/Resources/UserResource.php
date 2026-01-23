@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'locale' => $this->locale ?? config('app.locale', 'en'),
             'verified' => $this->hasVerifiedEmail(),
             'profile' => $this->when(
                 $this->relationLoaded('profile'),

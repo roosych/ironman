@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\Notification;
+use App\Models\User;
 use App\Services\Firebase\FcmService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -53,10 +54,23 @@ class SendNotificationJob implements ShouldQueue
             return;
         }
 
+        // Get user locale from database to use correct translation
+        $userLocale = $this->getUserLocale($user);
+        
+        // Use translation from JSON if available, otherwise fallback to stored title/body
+        $title = $notification->getTitle($userLocale);
+        $body = $notification->getBody($userLocale);
+
         $fcmNotification = [
-            'title' => $notification->title,
-            'body' => $notification->body,
+            'title' => $title,
+            'body' => $body,
         ];
+        
+        \Illuminate\Support\Facades\Log::debug('Sending FCM notification with locale', [
+            'notification_id' => $notification->id,
+            'user_id' => $user->id,
+            'locale' => $userLocale,
+        ]);
 
         $data = $notification->data ?? [];
         $fcmData = array_merge(
@@ -75,6 +89,25 @@ class SendNotificationJob implements ShouldQueue
             ]);
 
             throw $e;
+        }
+    }
+
+    /**
+     * Get user locale from database.
+     */
+    private function getUserLocale(User $user): string
+    {
+        try {
+            // Reload user from database to get fresh locale
+            $freshUser = User::withoutGlobalScopes()->find($user->id);
+            
+            if (! $freshUser) {
+                return config('app.locale', 'en');
+            }
+            
+            return $freshUser->locale ?? config('app.locale', 'en');
+        } catch (\Exception $e) {
+            return config('app.locale', 'en');
         }
     }
 }

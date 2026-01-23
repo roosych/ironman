@@ -19,8 +19,7 @@ class SendPasswordChangedNotification implements ShouldQueue
 
         SendNotificationAction::dispatch(
             $user,
-            'Пароль изменен',
-            'Пароль вашего аккаунта был успешно изменен. Все другие сессии завершены.',
+            'password_changed',
             'security',
             [
                 'action' => 'password_changed',

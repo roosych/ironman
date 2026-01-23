@@ -32,6 +32,7 @@ Route::prefix('auth')->group(function (): void {
 Route::middleware('auth:sanctum')->prefix('auth')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('v1.auth.logout');
     Route::get('/user', [AuthController::class, 'user'])->name('v1.auth.user');
+    Route::put('/locale', [AuthController::class, 'updateLocale'])->name('v1.auth.locale.update');
     Route::post('/email/resend-verification', [AuthController::class, 'sendVerificationEmail'])
         ->name('v1.auth.resend-verification');
 });
@@ -45,7 +46,6 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
     Route::get('/profile', [ProfileController::class, 'show'])->name('v1.user.profile.show');
     Route::put('/profile', [ProfileController::class, 'update'])->name('v1.user.profile.update');
     Route::post('/profile/avatar', [ProfileController::class, 'setAvatar'])->name('v1.user.profile.avatar.set');
-    Route::post('/profile/request-sync', [ProfileController::class, 'requestSync'])->name('v1.user.profile.request-sync');
 
     // Photos
     Route::get('/photos', [ProfileController::class, 'getPhotos'])->name('v1.user.photos.index');
@@ -55,6 +55,12 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
     // FCM Tokens
     Route::post('/fcm-token', [FcmTokenController::class, 'store'])->name('v1.user.fcm-token.store');
     Route::delete('/fcm-token', [FcmTokenController::class, 'destroy'])->name('v1.user.fcm-token.destroy');
+});
+
+// Protected profile selection routes (for profile selection screen)
+Route::middleware('auth:sanctum')->prefix('profiles')->group(function (): void {
+    Route::post('/link', [ProfileController::class, 'link'])->name('v1.profiles.link');
+    Route::post('/create', [ProfileController::class, 'create'])->name('v1.profiles.create');
 });
 
 // Protected notifications routes
