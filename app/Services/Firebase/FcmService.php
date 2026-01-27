@@ -6,6 +6,7 @@ namespace App\Services\Firebase;
 
 use App\Models\FcmToken;
 use App\Models\User;
+use App\Services\Firebase\FirebaseConfigService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Kreait\Firebase\Factory;
@@ -25,11 +26,14 @@ class FcmService
             return $this->messaging;
         }
 
-        $credentialsPath = config('firebase.credentials');
-        $projectId = config('firebase.project_id');
+        // Use FirebaseConfigService for automatic environment detection
+        $config = FirebaseConfigService::getConfig();
+        $credentialsPath = $config['credentials'];
+        $projectId = $config['project_id'];
 
         if (! $projectId || ! $credentialsPath) {
-            throw new \RuntimeException('Firebase credentials not configured. Please set FIREBASE_PROJECT_ID and FIREBASE_CREDENTIALS in .env');
+            $currentEnv = config('app.env', 'production');
+            throw new \RuntimeException("Firebase credentials not configured for environment '{$currentEnv}'. Please check Firebase environment configuration.");
         }
 
         // Handle both absolute paths and storage paths
