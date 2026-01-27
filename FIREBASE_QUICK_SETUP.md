@@ -2,7 +2,7 @@
 
 ## Быстрая настройка для новой команды
 
-### 1. Скачайте 3 файла из Firebase Console
+### 1. Скачайте 2 файла из Firebase Console
 
 Для каждого проекта:
 1. Откройте [Firebase Console](https://console.firebase.google.com/)
@@ -14,7 +14,6 @@
 ```
 storage/app/firebase/
 ├── dev/firebase-dev.json          ← Development проект
-├── staging/firebase-staging.json  ← Staging проект
 └── prod/firebase-prod.json        ← Production проект
 ```
 
@@ -28,10 +27,6 @@ FIREBASE_CREDENTIALS=storage/app/firebase/prod/firebase-prod.json
 # Development
 FIREBASE_DEV_PROJECT_ID=your-dev-project-id
 FIREBASE_DEV_CREDENTIALS=storage/app/firebase/dev/firebase-dev.json
-
-# Staging
-FIREBASE_STAGING_PROJECT_ID=your-staging-project-id
-FIREBASE_STAGING_CREDENTIALS=storage/app/firebase/staging/firebase-staging.json
 ```
 
 ### 4. Готово! 🎉
@@ -39,7 +34,6 @@ FIREBASE_STAGING_CREDENTIALS=storage/app/firebase/staging/firebase-staging.json
 Система автоматически выберет правильный Firebase проект на основе `APP_ENV`:
 
 - `APP_ENV=local` → Development Firebase
-- `APP_ENV=staging` → Staging Firebase
 - `APP_ENV=production` → Production Firebase
 
 ## ⚠️ Безопасность

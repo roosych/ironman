@@ -8,7 +8,7 @@ return [
     | Firebase Configuration
     |--------------------------------------------------------------------------
     |
-    | This configuration supports multiple environments (dev, staging, prod).
+    | This configuration supports multiple environments (dev, prod).
     | The system automatically selects the correct Firebase project and
     | credentials based on the APP_ENV setting.
     |
@@ -35,10 +35,6 @@ return [
         'development' => [
             'project_id' => env('FIREBASE_DEV_PROJECT_ID'),
             'credentials' => env('FIREBASE_DEV_CREDENTIALS', 'storage/app/firebase/dev/firebase-dev.json'),
-        ],
-        'staging' => [
-            'project_id' => env('FIREBASE_STAGING_PROJECT_ID'),
-            'credentials' => env('FIREBASE_STAGING_CREDENTIALS', 'storage/app/firebase/staging/firebase-staging.json'),
         ],
         'production' => [
             'project_id' => env('FIREBASE_PROD_PROJECT_ID', env('FIREBASE_PROJECT_ID')),

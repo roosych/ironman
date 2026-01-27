@@ -2,9 +2,8 @@
 
 ## Обзор
 
-Этот проект поддерживает три окружения Firebase:
+Этот проект поддерживает два окружения Firebase:
 - **Development** (`local`/`development`) - для разработки
-- **Staging** (`staging`) - для тестирования
 - **Production** (`production`) - для продакшн
 
 ## Структура файлов
@@ -13,8 +12,6 @@
 storage/app/firebase/
 ├── dev/
 │   └── firebase-dev.json          # Credentials для разработки
-├── staging/
-│   └── firebase-staging.json      # Credentials для staging
 └── prod/
     └── firebase-prod.json         # Credentials для продакшн
 ```
@@ -31,9 +28,8 @@ storage/app/firebase/
 ### 1. Создание проектов в Firebase Console
 
 1. Перейдите в [Firebase Console](https://console.firebase.google.com/)
-2. Создайте три отдельных проекта:
+2. Создайте два отдельных проекта:
    - `ironman-dev` (для разработки)
-   - `ironman-staging` (для тестирования)
    - `ironman-prod` (для продакшн, если еще не создан)
 
 ### 2. Скачивание Service Account Keys
@@ -54,9 +50,6 @@ storage/app/firebase/
 # Development окружение
 storage/app/firebase/dev/firebase-dev.json
 
-# Staging окружение
-storage/app/firebase/staging/firebase-staging.json
-
 # Production окружение
 storage/app/firebase/prod/firebase-prod.json
 ```
@@ -75,10 +68,6 @@ FIREBASE_CREDENTIALS=storage/app/firebase/prod/firebase-prod.json
 # Firebase Development Environment
 FIREBASE_DEV_PROJECT_ID=your-dev-project-id
 FIREBASE_DEV_CREDENTIALS=storage/app/firebase/dev/firebase-dev.json
-
-# Firebase Staging Environment
-FIREBASE_STAGING_PROJECT_ID=your-staging-project-id
-FIREBASE_STAGING_CREDENTIALS=storage/app/firebase/staging/firebase-staging.json
 ```
 
 ## Использование в коде
@@ -108,8 +97,8 @@ if (FirebaseConfigService::isConfigured()) {
 ### Получение конфигурации для конкретного окружения
 
 ```php
-// Получить конфигурацию для staging, независимо от текущего APP_ENV
-$stagingConfig = FirebaseConfigService::getConfigForEnvironment('staging');
+// Получить конфигурацию для production, независимо от текущего APP_ENV
+$prodConfig = FirebaseConfigService::getConfigForEnvironment('production');
 ```
 
 ## Соответствие APP_ENV и Firebase окружений
@@ -118,7 +107,6 @@ $stagingConfig = FirebaseConfigService::getConfigForEnvironment('staging');
 |---------|---------------------|------------------|
 | `local` | Development | `storage/app/firebase/dev/firebase-dev.json` |
 | `development` | Development | `storage/app/firebase/dev/firebase-dev.json` |
-| `staging` | Staging | `storage/app/firebase/staging/firebase-staging.json` |
 | `production` | Production | `storage/app/firebase/prod/firebase-prod.json` |
 
 ## Миграция существующего проекта
@@ -127,7 +115,7 @@ $stagingConfig = FirebaseConfigService::getConfigForEnvironment('staging');
 
 1. Переместите существующий файл в папку `storage/app/firebase/prod/`
 2. Обновите `FIREBASE_CREDENTIALS` в `.env` на новый путь
-3. Настройте dev и staging окружения по инструкции выше
+3. Настройте dev окружение по инструкции выше
 
 ## Проверка настройки
 
@@ -150,12 +138,6 @@ App\Services\Firebase\FirebaseConfigService::getCurrentEnvironment();
 ```env
 APP_ENV=development
 # Система автоматически использует dev Firebase проект
-```
-
-### Staging Server
-```env
-APP_ENV=staging
-# Система автоматически использует staging Firebase проект
 ```
 
 ### Production Server
