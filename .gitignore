@@ -12,6 +12,11 @@
 !.env.example
 # Исключаем .env.example, так как это шаблон без секретов
 
+# Firebase credentials (секретные ключи для всех окружений)
+storage/app/firebase/**/*.json
+!storage/app/firebase/**/.gitkeep
+# Firebase service account keys содержат приватные ключи и не должны быть в Git
+
 # Файлы аутентификации Composer (токены для приватных репозиториев)
 auth.json
 # Содержит токены доступа к приватным пакетам Composer
