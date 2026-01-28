@@ -9,7 +9,13 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json([
+        'name' => 'IronStats API',
+        'status' => 'ok',
+        'version' => 'v1',
+        'environment' => app()->environment(),
+        'time' => now()->toIso8601String(),
+    ]);
 });
 
 // Email verification route (web route, not API)
