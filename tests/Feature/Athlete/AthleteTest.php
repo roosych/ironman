@@ -367,7 +367,9 @@ class AthleteTest extends TestCase
                 'data' => [
                     'ironman' => [
                         'swim' => ['time', 'seconds', 'race_date', 'location'],
+                        't1',
                         'bike',
+                        't2',
                         'run',
                         'total',
                     ],

@@ -18,7 +18,7 @@ class RankingTest extends TestCase
     public function test_can_get_rankings_by_race_type_and_discipline(): void
     {
         $athlete = UserProfile::factory()->athlete()->create();
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete->id,
             'total_time' => 36000,
         ]);
@@ -54,19 +54,19 @@ class RankingTest extends TestCase
         $athlete3 = UserProfile::factory()->athlete()->create();
 
         // Athlete 1: slowest
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete1->id,
             'total_time' => 40000,
         ]);
 
         // Athlete 2: fastest
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete2->id,
             'total_time' => 32000,
         ]);
 
         // Athlete 3: middle
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete3->id,
             'total_time' => 36000,
         ]);
@@ -91,11 +91,11 @@ class RankingTest extends TestCase
         $athlete = UserProfile::factory()->athlete()->create();
 
         // Two races, different times
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete->id,
             'total_time' => 40000,
         ]);
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete->id,
             'total_time' => 35000, // Best time
         ]);
@@ -112,14 +112,14 @@ class RankingTest extends TestCase
         $athlete2 = UserProfile::factory()->athlete()->create();
 
         // Athlete 1: fast swim, slow bike
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete1->id,
             'swim_time' => 3000,
             'bike_time' => 20000,
         ]);
 
         // Athlete 2: slow swim, fast bike
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete2->id,
             'swim_time' => 4000,
             'bike_time' => 17000,
@@ -138,11 +138,11 @@ class RankingTest extends TestCase
     {
         $athlete = UserProfile::factory()->athlete()->create();
 
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete->id,
             'total_time' => 36000,
         ]);
-        RaceResult::factory()->ironman703()->create([
+        RaceResult::factory()->ironman703()->approved()->create([
             'user_profile_id' => $athlete->id,
             'total_time' => 18000,
         ]);
@@ -164,7 +164,7 @@ class RankingTest extends TestCase
         $athlete = UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
         UserPhoto::factory()->avatar()->create(['user_id' => $user->id]);
 
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete->id,
         ]);
 
@@ -179,14 +179,14 @@ class RankingTest extends TestCase
         $athlete1 = UserProfile::factory()->athlete()->create();
         $athlete2 = UserProfile::factory()->athlete()->create();
 
-        // Athlete 1: valid time
-        RaceResult::factory()->ironman()->create([
+        // Athlete 1: valid time (all disciplines > 0)
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete1->id,
             'swim_time' => 4000,
         ]);
 
-        // Athlete 2: zero swim time
-        RaceResult::factory()->ironman()->create([
+        // Athlete 2: zero swim time (incomplete - excluded from rankings)
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete2->id,
             'swim_time' => 0,
         ]);
@@ -244,7 +244,7 @@ class RankingTest extends TestCase
     public function test_rankings_includes_race_details(): void
     {
         $athlete = UserProfile::factory()->athlete()->create();
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $athlete->id,
             'total_time' => 36000,
             'race_date' => '2023-06-15',

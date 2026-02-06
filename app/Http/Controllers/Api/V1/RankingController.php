@@ -92,6 +92,13 @@ class RankingController extends Controller
                 DB::raw("MIN({$disciplineColumn}) as best_time"),
             ])
             ->where('race_results.race_type', $raceType->value)
+            ->where('race_results.is_approved', true)
+            ->where('race_results.swim_time', '>', 0)
+            ->where('race_results.t1_time', '>', 0)
+            ->where('race_results.bike_time', '>', 0)
+            ->where('race_results.t2_time', '>', 0)
+            ->where('race_results.run_time', '>', 0)
+            ->where('race_results.total_time', '>', 0)
             ->where($disciplineColumn, '>', 0)
             ->where('user_profiles.role', 'athlete')
             ->groupBy('user_profiles.id', 'users.name', 'user_profiles.admin_full_name', 'user_photos.path')
@@ -103,9 +110,16 @@ class RankingController extends Controller
         $position = 1;
 
         foreach ($results as $result) {
-            // Get the race details for this best time
+            // Get the race details for this best time (only approved, complete results)
             $raceDetails = RaceResult::where('user_profile_id', $result->athlete_id)
                 ->where('race_type', $raceType)
+                ->where('is_approved', true)
+                ->where('swim_time', '>', 0)
+                ->where('t1_time', '>', 0)
+                ->where('bike_time', '>', 0)
+                ->where('t2_time', '>', 0)
+                ->where('run_time', '>', 0)
+                ->where('total_time', '>', 0)
                 ->where($disciplineColumn, $result->best_time)
                 ->first();
 

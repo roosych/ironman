@@ -167,7 +167,7 @@ class AthleteController extends Controller
         }
 
         $records = [];
-        $disciplines = ['swim_time', 'bike_time', 'run_time', 'total_time'];
+        $disciplines = ['swim_time', 't1_time', 'bike_time', 't2_time', 'run_time', 'total_time'];
 
         foreach (RaceType::cases() as $raceType) {
             $raceTypeRecords = [];
@@ -188,11 +188,14 @@ class AthleteController extends Controller
      */
     private function getBestTimeForDiscipline(int $profileId, RaceType $raceType, string $discipline): ?array
     {
-        $result = RaceResult::where('user_profile_id', $profileId)
+        $query = RaceResult::where('user_profile_id', $profileId)
             ->where('race_type', $raceType)
-            ->where($discipline, '>', 0)
-            ->orderBy($discipline)
-            ->first();
+            ->where('is_approved', true)
+            ->where($discipline, '>', 0);
+
+        $this->applyCompleteResultsFilter($query);
+
+        $result = $query->orderBy($discipline)->first();
 
         if (!$result) {
             return null;
