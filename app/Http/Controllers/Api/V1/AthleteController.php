@@ -6,10 +6,13 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\RaceType;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserPhotoResource;
 use App\Models\RaceResult;
 use App\Models\UserProfile;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class AthleteController extends Controller
@@ -36,7 +39,7 @@ class AthleteController extends Controller
     /**
      * Get a single athlete by ID.
      */
-    public function show(int $id): JsonResponse
+    public function show(int $id, Request $request): JsonResponse
     {
         $profile = UserProfile::with([
             'user.avatar',
@@ -47,7 +50,9 @@ class AthleteController extends Controller
             ->first();
 
         if (!$profile) {
-            return $this->errorResponse(['athlete' => ['Атлет не найден.']], 404);
+            return $this->errorResponse([
+                'athlete' => [$this->trans($request, 'api.athlete.not_found')],
+            ], 404);
         }
 
         return $this->successResponse(['data' => $this->formatAthlete($profile, detailed: true)]);
@@ -156,14 +161,16 @@ class AthleteController extends Controller
     /**
      * Get athlete's personal records by discipline for each race type.
      */
-    public function records(int $id): JsonResponse
+    public function records(int $id, Request $request): JsonResponse
     {
         $profile = UserProfile::where('id', $id)
             ->where('role', 'athlete')
             ->first();
 
         if (!$profile) {
-            return $this->errorResponse(['athlete' => ['Атлет не найден.']], 404);
+            return $this->errorResponse([
+                'athlete' => [$this->trans($request, 'api.athlete.not_found')],
+            ], 404);
         }
 
         $records = [];
@@ -215,5 +222,96 @@ class AthleteController extends Controller
     private function formatDisciplineName(string $discipline): string
     {
         return str_replace('_time', '', $discipline);
+    }
+
+    /**
+     * Get athlete's photos.
+     */
+    public function photos(int $id, Request $request): JsonResponse
+    {
+        $profile = UserProfile::with(['user.photos' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }])
+            ->where('id', $id)
+            ->where('role', 'athlete')
+            ->first();
+
+        if (!$profile || !$profile->user) {
+            return $this->errorResponse([
+                'athlete' => [$this->trans($request, 'api.athlete.not_found')],
+            ], 404);
+        }
+
+        // Get pagination parameters
+        $perPage = (int) $request->get('per_page', 15);
+        $perPage = min(max($perPage, 1), 50); // Limit between 1 and 50
+
+        // Paginate photos
+        $photos = $profile->user->photos()
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+
+        return $this->successResponse([
+            'data' => UserPhotoResource::collection($photos->items()),
+            'pagination' => [
+                'current_page' => $photos->currentPage(),
+                'per_page' => $photos->perPage(),
+                'total' => $photos->total(),
+                'last_page' => $photos->lastPage(),
+            ],
+        ]);
+    }
+
+    /**
+     * Detect locale from request (header or parameter).
+     */
+    private function detectLocale(Request $request): string
+    {
+        // Check if locale is provided in request
+        if ($request->has('locale') && in_array($request->input('locale'), ['ru', 'en'], true)) {
+            return $request->input('locale');
+        }
+
+        // Try to detect from Accept-Language header
+        $acceptLanguage = $request->header('Accept-Language');
+        if ($acceptLanguage) {
+            // Parse Accept-Language header (e.g., "en-US,en;q=0.9,ru;q=0.8")
+            $languages = explode(',', $acceptLanguage);
+            foreach ($languages as $language) {
+                $lang = trim(explode(';', $language)[0]);
+                $lang = explode('-', $lang)[0]; // Get language part without country
+
+                if (in_array($lang, ['ru', 'en'], true)) {
+                    return $lang;
+                }
+            }
+        }
+
+        return config('app.locale', 'en');
+    }
+
+    /**
+     * Get locale for response translation.
+     */
+    private function getResponseLocale(Request $request): string
+    {
+        // For public endpoints, detect from request since user might not be authenticated
+        return $this->detectLocale($request);
+    }
+
+    /**
+     * Translate message using request locale.
+     */
+    private function trans(Request $request, string $key, array $params = []): string
+    {
+        $locale = $this->getResponseLocale($request);
+        $originalLocale = App::getLocale();
+        App::setLocale($locale);
+
+        $translated = trans($key, $params);
+
+        App::setLocale($originalLocale);
+
+        return $translated;
     }
 }

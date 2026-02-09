@@ -25,5 +25,8 @@ return [
     'locale' => [
         'updated' => 'Locale successfully updated.',
     ],
+    'athlete' => [
+        'not_found' => 'Athlete not found.',
+    ],
 ];
 
