@@ -242,6 +242,19 @@ class AthleteController extends Controller
             ], 404);
         }
 
+        // Check if athlete has any photos
+        $totalPhotos = $profile->user->photos()->count();
+
+        if ($totalPhotos === 0) {
+            // Return simplified response when no photos exist
+            return $this->successResponse([
+                'message' => $this->trans($request, 'api.athlete.no_photos'),
+                'data' => [],
+                'has_photos' => false,
+                'total' => 0,
+            ]);
+        }
+
         // Get pagination parameters
         $perPage = (int) $request->get('per_page', 15);
         $perPage = min(max($perPage, 1), 50); // Limit between 1 and 50
@@ -253,6 +266,7 @@ class AthleteController extends Controller
 
         return $this->successResponse([
             'data' => UserPhotoResource::collection($photos->items()),
+            'has_photos' => true,
             'pagination' => [
                 'current_page' => $photos->currentPage(),
                 'per_page' => $photos->perPage(),

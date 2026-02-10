@@ -27,6 +27,7 @@ return [
     ],
     'athlete' => [
         'not_found' => 'Athlete not found.',
+        'no_photos' => 'No photos found for this athlete.',
     ],
 ];
 
