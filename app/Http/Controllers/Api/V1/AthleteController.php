@@ -71,6 +71,7 @@ class AthleteController extends Controller
             'id' => $profile->id,
             'name' => $profile->user?->name ?? $profile->admin_full_name,
             'avatar' => $profile->user?->avatar?->url,
+            'country_iso' => $profile->country_iso,
             'race_counts' => [
                 'ironman' => $counts->get('ironman', 0),
                 'ironman_70_3' => $counts->get('ironman_70_3', 0),

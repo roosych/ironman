@@ -44,6 +44,7 @@ class UserProfileResource extends JsonResource
             'role' => $this->role,
             'ironman_number' => $this->ironman_number,
             'ironman_races_count' => $ironmanRacesCount,
+            'country_iso' => $this->country_iso,
             'bio' => $this->bio,
             'social_links' => $this->social_links ?? [
                 'strava' => null,

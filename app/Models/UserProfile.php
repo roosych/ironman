@@ -18,6 +18,7 @@ class UserProfile extends Model
         'external_id',
         'user_id',
         'admin_full_name',
+        'country_iso',
         'role',
         'ironman_number',
         'bio',
