@@ -29,5 +29,9 @@ return [
         'not_found' => 'Athlete not found.',
         'no_photos' => 'No photos found for this athlete.',
     ],
+    'validation' => [
+        'country_iso_required' => 'Country code is required.',
+        'country_iso_invalid' => 'Country code must be in ISO format (e.g., RU, AZ, BR).',
+    ],
 ];
 

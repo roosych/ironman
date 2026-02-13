@@ -26,6 +26,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'locale' => ['sometimes', 'string', 'in:ru,en'],
+            'country_iso' => ['required', 'string', 'size:2', 'regex:/^[A-Z]{2}$/'],
         ];
     }
 
@@ -42,6 +43,9 @@ class RegisterRequest extends FormRequest
             'email.unique' => 'Невозможно выполнить регистрацию с указанными данными.',
             'password.required' => 'Пароль обязателен для заполнения.',
             'password.confirmed' => 'Пароли не совпадают.',
+            'country_iso.required' => 'Код страны обязателен для заполнения.',
+            'country_iso.size' => 'Код страны должен состоять из 2 букв.',
+            'country_iso.regex' => 'Код страны должен быть в формате ISO (например: RU, AZ, BR).',
         ];
     }
 

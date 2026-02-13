@@ -21,6 +21,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -136,24 +137,69 @@ class AuthController extends Controller
         return $translated;
     }
 
+    /**
+     * Генерирует уникальный код для профиля.
+     * Формат: 6 символов (буквы и цифры, без 0, O, I, L для избежания путаницы).
+     */
+    private function generateUniqueCode(): string
+    {
+        $characters = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+        $code = '';
+        $maxAttempts = 100;
+        $attempt = 0;
+
+        do {
+            $code = '';
+            for ($i = 0; $i < 6; $i++) {
+                $code .= $characters[random_int(0, strlen($characters) - 1)];
+            }
+            $attempt++;
+        } while (
+            UserProfile::where('code', $code)->exists() &&
+            $attempt < $maxAttempts
+        );
+
+        if ($attempt >= $maxAttempts) {
+            throw new \RuntimeException('Не удалось сгенерировать уникальный код после ' . $maxAttempts . ' попыток.');
+        }
+
+        return $code;
+    }
+
     /** Register a new user */
     public function register(RegisterRequest $request): JsonResponse
     {
         // Use locale from request if provided, otherwise detect from headers
         $locale = $request->safe()->locale ?? $this->detectLocale($request);
 
-        $user = User::create([
-            'name' => $request->safe()->name,
-            'email' => $request->safe()->email,
-            'password' => Hash::make($request->safe()->password),
-            'locale' => $locale,
-        ]);
+        // Создаем пользователя и профиль атлета в транзакции
+        $user = DB::transaction(function () use ($request, $locale) {
+            // Создаем пользователя
+            $user = User::create([
+                'name' => $request->safe()->name,
+                'email' => $request->safe()->email,
+                'password' => Hash::make($request->safe()->password),
+                'locale' => $locale,
+            ]);
+
+            // Сразу создаем профиль атлета
+            $user->profile()->create([
+                'admin_full_name' => $request->safe()->name,
+                'country_iso' => strtoupper($request->safe()->country_iso),
+                'role' => 'athlete',
+                'ironman_number' => 0,
+                'code' => $this->generateUniqueCode(),
+                'code_used' => false,
+            ]);
+
+            return $user;
+        });
 
         // event(new Registered($user));
 
         $user->notify(new VerifyEmailNotification);
 
-        // Загружаем relations для консистентности ответа (будут null/empty для нового пользователя)
+        // Загружаем relations для консистентности ответа
         $this->loadUserWithProfile($user);
 
         $token = $user->createToken('auth_token')->plainTextToken;
