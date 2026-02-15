@@ -36,10 +36,14 @@ class SetAvatarRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'photo_id.required' => 'ID фотографии обязателен.',
-            'photo_id.integer' => 'ID фотографии должен быть числом.',
-            'photo_id.exists' => 'Фотография не найдена или не принадлежит вам.',
+            'photo_id.required' => trans('api.validation.profile.set_avatar.photo_id.required'),
+            'photo_id.integer' => trans('api.validation.profile.set_avatar.photo_id.integer'),
+            'photo_id.exists' => trans('api.validation.profile.set_avatar.photo_id.exists'),
         ];
     }
 

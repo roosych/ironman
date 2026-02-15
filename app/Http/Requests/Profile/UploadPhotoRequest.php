@@ -31,15 +31,19 @@ class UploadPhotoRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'photos.required' => 'Необходимо загрузить хотя бы одну фотографию.',
-            'photos.array' => 'Фотографии должны быть переданы как массив.',
-            'photos.min' => 'Необходимо загрузить хотя бы одну фотографию.',
-            'photos.max' => 'Можно загрузить не более 10 фотографий за раз.',
-            'photos.*.required' => 'Каждый файл должен быть изображением.',
-            'photos.*.image' => 'Файл должен быть изображением.',
-            'photos.*.mimes' => 'Допустимые форматы: jpeg, png, jpg, webp.',
-            'photos.*.max' => 'Размер файла не должен превышать 5 МБ.',
+            'photos.required' => trans('api.validation.profile.upload_photo.photos.required'),
+            'photos.array' => trans('api.validation.profile.upload_photo.photos.array'),
+            'photos.min' => trans('api.validation.profile.upload_photo.photos.min'),
+            'photos.max' => trans('api.validation.profile.upload_photo.photos.max'),
+            'photos.*.required' => trans('api.validation.profile.upload_photo.photos.*.required'),
+            'photos.*.image' => trans('api.validation.profile.upload_photo.photos.*.image'),
+            'photos.*.mimes' => trans('api.validation.profile.upload_photo.photos.*.mimes'),
+            'photos.*.max' => trans('api.validation.profile.upload_photo.photos.*.max'),
         ];
     }
 

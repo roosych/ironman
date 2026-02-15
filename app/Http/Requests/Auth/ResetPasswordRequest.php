@@ -33,13 +33,17 @@ class ResetPasswordRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? $this->input('locale') ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'token.required' => 'Токен сброса пароля обязателен.',
-            'email.required' => 'Email обязателен для заполнения.',
-            'email.email' => 'Введите корректный email адрес.',
-            'email.exists' => 'Пользователь с таким email не найден.',
-            'password.required' => 'Пароль обязателен для заполнения.',
-            'password.confirmed' => 'Пароли не совпадают.',
+            'token.required' => trans('api.validation.auth.reset_password.token.required'),
+            'email.required' => trans('api.validation.auth.reset_password.email.required'),
+            'email.email' => trans('api.validation.auth.reset_password.email.email'),
+            'email.exists' => trans('api.validation.auth.reset_password.email.exists'),
+            'password.required' => trans('api.validation.auth.reset_password.password.required'),
+            'password.confirmed' => trans('api.validation.auth.reset_password.password.confirmed'),
         ];
     }
 
