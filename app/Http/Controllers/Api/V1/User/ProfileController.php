@@ -16,6 +16,7 @@ use App\Services\UserProfileService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class ProfileController extends Controller
 {
@@ -24,6 +25,35 @@ class ProfileController extends Controller
     public function __construct(
         private readonly UserProfileService $profileService
     ) {}
+
+    /**
+     * Get locale for response translation.
+     */
+    private function getResponseLocale(Request $request): string
+    {
+        $user = $request->user();
+        if ($user && $user->locale) {
+            return $user->locale;
+        }
+
+        return config('app.locale', 'en');
+    }
+
+    /**
+     * Translate message using request locale.
+     */
+    private function trans(Request $request, string $key, array $params = []): string
+    {
+        $locale = $this->getResponseLocale($request);
+        $originalLocale = App::getLocale();
+        App::setLocale($locale);
+
+        $translated = trans($key, $params);
+
+        App::setLocale($originalLocale);
+
+        return $translated;
+    }
 
     /**
      * Get current user profile with photos.
@@ -66,6 +96,7 @@ class ProfileController extends Controller
         $profile->setRelation('user', $user);
 
         return $this->successResponse([
+            'message' => $this->trans($request, 'api.profile.updated'),
             'data' => [
                 'profile' => UserProfileResource::make($profile),
             ],
@@ -138,14 +169,14 @@ class ProfileController extends Controller
 
         if (! $photo) {
             return $this->errorResponse([
-                'photo_id' => ['Фотография не найдена или не принадлежит вам.'],
+                'photo_id' => [$this->trans($request, 'api.photo.not_found_or_unauthorized')],
             ], 404);
         }
 
         $this->profileService->deletePhoto($user, $photoId);
 
         return $this->successResponse([
-            'message' => 'Фотография успешно удалена.',
+            'message' => $this->trans($request, 'api.photo.deleted'),
         ]);
     }
 

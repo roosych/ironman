@@ -31,6 +31,11 @@ class UserProfileService
                 $data['admin_full_name'] = $user->name;
             }
 
+            // Convert country_iso to uppercase for consistency
+            if (isset($data['country_iso'])) {
+                $data['country_iso'] = strtoupper($data['country_iso']);
+            }
+
             return $user->profile()->updateOrCreate(
                 ['user_id' => $user->id],
                 $data

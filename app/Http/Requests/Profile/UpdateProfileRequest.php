@@ -25,7 +25,7 @@ class UpdateProfileRequest extends FormRequest
             'name' => ['sometimes', 'string', 'max:255'],
             'role' => ['sometimes', 'string', Rule::in(['athlete', 'coach', 'admin'])],
             'ironman_number' => ['nullable', 'integer', 'min:1'],
-            'country_iso' => ['nullable', 'string', 'size:2'],
+            'country_iso' => ['nullable', 'string', 'size:2', 'regex:/^[A-Z]{2}$/'],
             'bio' => ['nullable', 'string', 'max:500'],
             'social_links' => ['nullable', 'array'],
             'social_links.strava' => ['nullable', 'url', 'max:255'],
@@ -39,16 +39,21 @@ class UpdateProfileRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'name.max' => 'Имя не должно превышать 255 символов.',
-            'role.in' => 'Роль должна быть одной из: athlete, coach, admin.',
-            'ironman_number.integer' => 'Номер Ironman должен быть целым числом.',
-            'ironman_number.min' => 'Номер Ironman должен быть положительным числом.',
-            'country_iso.string' => 'Код страны должен быть строкой.',
-            'country_iso.size' => 'Код страны должен состоять из 2 символов.',
-            'bio.max' => 'Биография не должна превышать 500 символов.',
-            'social_links.strava.url' => 'Ссылка на Strava должна быть валидным URL.',
-            'social_links.facebook.url' => 'Ссылка на Facebook должна быть валидным URL.',
+            'name.max' => trans('api.validation.profile.name.max'),
+            'role.in' => trans('api.validation.profile.role.in'),
+            'ironman_number.integer' => trans('api.validation.profile.ironman_number.integer'),
+            'ironman_number.min' => trans('api.validation.profile.ironman_number.min'),
+            'country_iso.string' => trans('api.validation.profile.country_iso.string'),
+            'country_iso.size' => trans('api.validation.profile.country_iso.size'),
+            'country_iso.regex' => trans('api.validation.profile.country_iso.regex'),
+            'bio.max' => trans('api.validation.profile.bio.max'),
+            'social_links.strava.url' => trans('api.validation.profile.social_links.strava.url'),
+            'social_links.facebook.url' => trans('api.validation.profile.social_links.facebook.url'),
         ];
     }
 

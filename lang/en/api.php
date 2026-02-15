@@ -32,6 +32,48 @@ return [
     'validation' => [
         'country_iso_required' => 'Country code is required.',
         'country_iso_invalid' => 'Country code must be in ISO format (e.g., RU, AZ, BR).',
+        'profile' => [
+            'name' => [
+                'max' => 'Name must not exceed 255 characters.',
+            ],
+            'role' => [
+                'in' => 'Role must be one of: athlete, coach, admin.',
+            ],
+            'ironman_number' => [
+                'integer' => 'Ironman number must be an integer.',
+                'min' => 'Ironman number must be a positive number.',
+            ],
+            'country_iso' => [
+                'string' => 'Country code must be a string.',
+                'size' => 'Country code must be exactly 2 characters.',
+                'regex' => 'Country code must be in ISO format (e.g., RU, AZ, BR).',
+            ],
+            'bio' => [
+                'max' => 'Bio must not exceed 500 characters.',
+            ],
+            'social_links' => [
+                'strava' => [
+                    'url' => 'Strava link must be a valid URL.',
+                ],
+                'facebook' => [
+                    'url' => 'Facebook link must be a valid URL.',
+                ],
+            ],
+        ],
+    ],
+    'profile' => [
+        'updated' => 'Profile successfully updated.',
+        'country_iso_updated' => 'Country code successfully updated.',
+        'not_found' => 'Profile not found.',
+    ],
+    'photo' => [
+        'not_found_or_unauthorized' => 'Photo not found or does not belong to you.',
+        'deleted' => 'Photo successfully deleted.',
+    ],
+    'race_result' => [
+        'not_found_or_not_approved' => 'Result not found or not approved.',
+        'submitted_for_approval' => 'Result submitted for admin approval.',
+        'deleted' => 'Result deleted.',
     ],
 ];
 

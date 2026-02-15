@@ -13,10 +13,41 @@ use App\Models\RaceResult;
 use App\Models\UserProfile;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class RaceResultController extends Controller
 {
     use ApiResponse;
+
+    /**
+     * Get locale for response translation.
+     */
+    private function getResponseLocale(Request $request): string
+    {
+        $user = $request->user();
+        if ($user && $user->locale) {
+            return $user->locale;
+        }
+
+        return config('app.locale', 'en');
+    }
+
+    /**
+     * Translate message using request locale.
+     */
+    private function trans(Request $request, string $key, array $params = []): string
+    {
+        $locale = $this->getResponseLocale($request);
+        $originalLocale = App::getLocale();
+        App::setLocale($locale);
+
+        $translated = trans($key, $params);
+
+        App::setLocale($originalLocale);
+
+        return $translated;
+    }
 
     /** Get all race results (paginated) - only approved */
     public function index(): JsonResponse
@@ -53,10 +84,12 @@ class RaceResultController extends Controller
     }
 
     /** Get a single race result - only if approved */
-    public function show(RaceResult $raceResult): JsonResponse
+    public function show(Request $request, RaceResult $raceResult): JsonResponse
     {
         if (!$raceResult->is_approved) {
-            return $this->errorResponse(['message' => ['Результат не найден или не подтверждён.']], 404);
+            return $this->errorResponse([
+                'message' => [$this->trans($request, 'api.race_result.not_found_or_not_approved')]
+            ], 404);
         }
 
         $raceResult->load('profile.user');
@@ -72,7 +105,9 @@ class RaceResultController extends Controller
         $profile = $request->user()->profile;
 
         if (! $profile) {
-            return $this->errorResponse(['profile' => ['Профиль не найден.']], 403);
+            return $this->errorResponse([
+                'profile' => [$this->trans($request, 'api.profile.not_found')]
+            ], 403);
         }
 
         $data = $request->validated();
@@ -82,7 +117,7 @@ class RaceResultController extends Controller
         $raceResult->load('profile.user');
 
         return $this->successResponse([
-            'message' => 'Результат отправлен на подтверждение администратором.',
+            'message' => $this->trans($request, 'api.race_result.submitted_for_approval'),
             'data' => RaceResultResource::make($raceResult),
         ], 201);
     }
@@ -104,7 +139,7 @@ class RaceResultController extends Controller
         $raceResult->delete();
 
         return $this->successResponse([
-            'message' => 'Результат удалён.',
+            'message' => $this->trans($request, 'api.race_result.deleted'),
         ]);
     }
 }
