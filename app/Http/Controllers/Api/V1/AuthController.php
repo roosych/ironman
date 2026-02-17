@@ -137,34 +137,6 @@ class AuthController extends Controller
         return $translated;
     }
 
-    /**
-     * Генерирует уникальный код для профиля.
-     * Формат: 6 символов (буквы и цифры, без 0, O, I, L для избежания путаницы).
-     */
-    private function generateUniqueCode(): string
-    {
-        $characters = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-        $code = '';
-        $maxAttempts = 100;
-        $attempt = 0;
-
-        do {
-            $code = '';
-            for ($i = 0; $i < 6; $i++) {
-                $code .= $characters[random_int(0, strlen($characters) - 1)];
-            }
-            $attempt++;
-        } while (
-            UserProfile::where('code', $code)->exists() &&
-            $attempt < $maxAttempts
-        );
-
-        if ($attempt >= $maxAttempts) {
-            throw new \RuntimeException('Не удалось сгенерировать уникальный код после ' . $maxAttempts . ' попыток.');
-        }
-
-        return $code;
-    }
 
     /** Register a new user */
     public function register(RegisterRequest $request): JsonResponse
@@ -188,8 +160,6 @@ class AuthController extends Controller
                 'country_iso' => strtoupper($request->safe()->country_iso),
                 'role' => 'athlete',
                 'ironman_number' => 0,
-                'code' => $this->generateUniqueCode(),
-                'code_used' => false,
             ]);
 
             return $user;

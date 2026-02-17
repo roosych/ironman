@@ -60,7 +60,6 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function (): void {
 
 // Protected profile selection routes (for profile selection screen)
 Route::middleware('auth:sanctum')->prefix('profiles')->group(function (): void {
-    Route::post('/link', [ProfileController::class, 'link'])->name('v1.profiles.link');
     Route::post('/create', [ProfileController::class, 'create'])->name('v1.profiles.create');
 });
 

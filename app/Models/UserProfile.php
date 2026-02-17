@@ -23,14 +23,11 @@ class UserProfile extends Model
         'ironman_number',
         'bio',
         'social_links',
-        'code',
-        'code_used',
     ];
 
     protected $casts = [
         'ironman_number' => 'integer',
         'social_links' => 'array',
-        'code_used' => 'boolean',
     ];
 
     public function user(): BelongsTo
