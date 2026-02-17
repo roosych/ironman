@@ -29,6 +29,10 @@ return [
         'not_found' => 'Athlete not found.',
         'no_photos' => 'No photos found for this athlete.',
     ],
+    'policy' => [
+        'not_found' => 'Policy not found.',
+        'invalid_type' => 'Invalid policy type.',
+    ],
     'validation' => [
         'country_iso_required' => 'Country code is required.',
         'country_iso_invalid' => 'Country code must be in ISO format (e.g., RU, AZ, BR).',
@@ -98,7 +102,7 @@ return [
         'update_locale' => [
             'locale' => [
                 'required' => 'Language is required.',
-                'in' => 'Only the following languages are supported: ru, en.',
+                'in' => 'Only the following languages are supported: ru, en, az.',
             ],
         ],
         'fcm' => [

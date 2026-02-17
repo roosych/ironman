@@ -85,7 +85,7 @@ class AuthController extends Controller
     private function detectLocale(Request $request): string
     {
         // Check if locale is provided in request
-        if ($request->has('locale') && in_array($request->input('locale'), ['ru', 'en'], true)) {
+        if ($request->has('locale') && in_array($request->input('locale'), ['ru', 'en', 'az'], true)) {
             return $request->input('locale');
         }
 
@@ -97,7 +97,7 @@ class AuthController extends Controller
             foreach ($languages as $lang) {
                 $lang = trim(explode(';', $lang)[0]);
                 $lang = strtolower(explode('-', $lang)[0]); // Get main language code
-                if (in_array($lang, ['ru', 'en'], true)) {
+                if (in_array($lang, ['ru', 'en', 'az'], true)) {
                     return $lang;
                 }
             }

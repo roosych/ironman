@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AthleteController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\PolicyController;
 use App\Http\Controllers\Api\V1\RaceResultController;
 use App\Http\Controllers\Api\V1\RankingController;
 use App\Http\Controllers\Api\V1\UpcomingRaceController;
@@ -97,6 +98,19 @@ Route::get('/rankings', [RankingController::class, 'index'])
 Route::get('/upcoming-races', [UpcomingRaceController::class, 'index'])
     ->middleware('throttle:60,1')
     ->name('v1.upcoming-races.index');
+
+// Public policy routes
+Route::prefix('policies')->group(function (): void {
+    Route::get('/types', [PolicyController::class, 'types'])
+        ->middleware('throttle:60,1')
+        ->name('v1.policies.types');
+    Route::get('/languages', [PolicyController::class, 'languages'])
+        ->middleware('throttle:60,1')
+        ->name('v1.policies.languages');
+    Route::get('/{type}', [PolicyController::class, 'getByType'])
+        ->middleware('throttle:60,1')
+        ->name('v1.policies.get-by-type');
+});
 
 // Protected upcoming races routes
 Route::middleware('auth:sanctum')->group(function (): void {

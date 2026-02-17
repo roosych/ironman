@@ -26,7 +26,7 @@ class UpdateLocaleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'locale' => ['required', 'string', 'in:ru,en'],
+            'locale' => ['required', 'string', 'in:ru,en,az'],
         ];
     }
 
