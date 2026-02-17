@@ -53,6 +53,9 @@ class RaceResultController extends Controller
     public function index(): JsonResponse
     {
         $results = RaceResult::with(['profile.user'])
+            ->whereHas('profile', function ($query) {
+                $query->where('results_transferred', false);
+            })
             ->where('is_approved', true)
             ->orderByDesc('race_date')
             ->paginate(15);
@@ -71,6 +74,13 @@ class RaceResultController extends Controller
     /** Get race results for a specific profile - only approved */
     public function profileResults(UserProfile $userProfile): JsonResponse
     {
+        // If the profile has transferred results, return empty collection
+        if ($userProfile->results_transferred) {
+            return $this->successResponse([
+                'data' => [],
+            ]);
+        }
+
         $results = $userProfile->raceResults()
             ->where('is_approved', true)
             ->with(['profile.user'])
@@ -87,6 +97,13 @@ class RaceResultController extends Controller
     public function show(Request $request, RaceResult $raceResult): JsonResponse
     {
         if (!$raceResult->is_approved) {
+            return $this->errorResponse([
+                'message' => [$this->trans($request, 'api.race_result.not_found_or_not_approved')]
+            ], 404);
+        }
+
+        // Check if the profile has transferred results
+        if ($raceResult->profile && $raceResult->profile->results_transferred) {
             return $this->errorResponse([
                 'message' => [$this->trans($request, 'api.race_result.not_found_or_not_approved')]
             ], 404);

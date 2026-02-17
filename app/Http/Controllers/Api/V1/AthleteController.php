@@ -29,6 +29,7 @@ class AthleteController extends Controller
             'raceResults:id,user_profile_id,race_type',
         ])
             ->where('role', 'athlete')
+            ->where('results_transferred', false)
             ->get();
 
         $data = $profiles->map(fn (UserProfile $profile) => $this->formatAthlete($profile));
@@ -47,6 +48,7 @@ class AthleteController extends Controller
         ])
             ->where('id', $id)
             ->where('role', 'athlete')
+            ->where('results_transferred', false)
             ->first();
 
         if (!$profile) {
@@ -109,7 +111,10 @@ class AthleteController extends Controller
     private function getRankingForRaceType(int $profileId, RaceType $raceType): ?array
     {
         // Get athlete's best time for this race type (only complete results)
-        $athleteBestTime = RaceResult::where('user_profile_id', $profileId)
+        $athleteBestTime = RaceResult::whereHas('profile', function ($query) {
+                $query->where('results_transferred', false);
+            })
+            ->where('user_profile_id', $profileId)
             ->where('race_type', $raceType)
             ->where(fn ($q) => $this->applyCompleteResultsFilter($q))
             ->min('total_time');
@@ -120,13 +125,15 @@ class AthleteController extends Controller
 
         // Base query for complete results
         $baseQuery = fn () => DB::table('race_results')
-            ->where('race_type', $raceType->value)
-            ->where('swim_time', '>', 0)
-            ->where('t1_time', '>', 0)
-            ->where('bike_time', '>', 0)
-            ->where('t2_time', '>', 0)
-            ->where('run_time', '>', 0)
-            ->where('total_time', '>', 0);
+            ->join('user_profiles', 'race_results.user_profile_id', '=', 'user_profiles.id')
+            ->where('race_results.race_type', $raceType->value)
+            ->where('user_profiles.results_transferred', false)
+            ->where('race_results.swim_time', '>', 0)
+            ->where('race_results.t1_time', '>', 0)
+            ->where('race_results.bike_time', '>', 0)
+            ->where('race_results.t2_time', '>', 0)
+            ->where('race_results.run_time', '>', 0)
+            ->where('race_results.total_time', '>', 0);
 
         // Count athletes with better (lower) best time
         $betterAthletes = $baseQuery()
@@ -166,6 +173,7 @@ class AthleteController extends Controller
     {
         $profile = UserProfile::where('id', $id)
             ->where('role', 'athlete')
+            ->where('results_transferred', false)
             ->first();
 
         if (!$profile) {
@@ -196,7 +204,10 @@ class AthleteController extends Controller
      */
     private function getBestTimeForDiscipline(int $profileId, RaceType $raceType, string $discipline): ?array
     {
-        $query = RaceResult::where('user_profile_id', $profileId)
+        $query = RaceResult::whereHas('profile', function ($query) {
+                $query->where('results_transferred', false);
+            })
+            ->where('user_profile_id', $profileId)
             ->where('race_type', $raceType)
             ->where('is_approved', true)
             ->where($discipline, '>', 0);
@@ -235,6 +246,7 @@ class AthleteController extends Controller
         }])
             ->where('id', $id)
             ->where('role', 'athlete')
+            ->where('results_transferred', false)
             ->first();
 
         if (!$profile || !$profile->user) {

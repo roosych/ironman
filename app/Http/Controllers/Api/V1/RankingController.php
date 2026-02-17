@@ -101,6 +101,7 @@ class RankingController extends Controller
             ->where('race_results.total_time', '>', 0)
             ->where($disciplineColumn, '>', 0)
             ->where('user_profiles.role', 'athlete')
+            ->where('user_profiles.results_transferred', false)
             ->groupBy('user_profiles.id', 'users.name', 'user_profiles.admin_full_name', 'user_photos.path')
             ->orderBy('best_time')
             ->get();
@@ -111,7 +112,10 @@ class RankingController extends Controller
 
         foreach ($results as $result) {
             // Get the race details for this best time (only approved, complete results)
-            $raceDetails = RaceResult::where('user_profile_id', $result->athlete_id)
+            $raceDetails = RaceResult::whereHas('profile', function ($query) {
+                    $query->where('results_transferred', false);
+                })
+                ->where('user_profile_id', $result->athlete_id)
                 ->where('race_type', $raceType)
                 ->where('is_approved', true)
                 ->where('swim_time', '>', 0)

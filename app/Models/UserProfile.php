@@ -28,6 +28,7 @@ class UserProfile extends Model
     protected $casts = [
         'ironman_number' => 'integer',
         'social_links' => 'array',
+        'results_transferred' => 'boolean',
     ];
 
     public function user(): BelongsTo
