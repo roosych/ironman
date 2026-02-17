@@ -32,14 +32,18 @@ class StoreUpcomingRaceRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'race_type.required' => 'Тип гонки обязателен.',
-            'race_type.Illuminate\Validation\Rules\Enum' => 'Неверный тип гонки.',
-            'location.required' => 'Локация обязательна.',
-            'location.max' => 'Локация не должна превышать 255 символов.',
-            'race_date.required' => 'Дата гонки обязательна.',
-            'race_date.date' => 'Неверный формат даты.',
-            'race_date.after' => 'Дата гонки должна быть в будущем.',
+            'race_type.required' => trans('api.validation.upcoming_race.store.race_type.required'),
+            'race_type.Illuminate\Validation\Rules\Enum' => trans('api.validation.upcoming_race.store.race_type.enum'),
+            'location.required' => trans('api.validation.upcoming_race.store.location.required'),
+            'location.max' => trans('api.validation.upcoming_race.store.location.max'),
+            'race_date.required' => trans('api.validation.upcoming_race.store.race_date.required'),
+            'race_date.date' => trans('api.validation.upcoming_race.store.race_date.date'),
+            'race_date.after' => trans('api.validation.upcoming_race.store.race_date.after'),
         ];
     }
 }

@@ -33,12 +33,16 @@ class StoreFcmTokenRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'token.required' => 'FCM токен обязателен.',
-            'token.string' => 'FCM токен должен быть строкой.',
-            'token.max' => 'FCM токен не должен превышать 500 символов.',
-            'device_type.in' => 'Тип устройства должен быть android или ios.',
-            'device_name.max' => 'Название устройства не должно превышать 255 символов.',
+            'token.required' => trans('api.validation.fcm.store_token.token.required'),
+            'token.string' => trans('api.validation.fcm.store_token.token.string'),
+            'token.max' => trans('api.validation.fcm.store_token.token.max'),
+            'device_type.in' => trans('api.validation.fcm.store_token.device_type.in'),
+            'device_name.max' => trans('api.validation.fcm.store_token.device_name.max'),
         ];
     }
 

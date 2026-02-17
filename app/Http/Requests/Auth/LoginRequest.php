@@ -32,10 +32,14 @@ class LoginRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? $this->input('locale') ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'email.required' => 'Email обязателен для заполнения.',
-            'email.email' => 'Введите корректный email адрес.',
-            'password.required' => 'Пароль обязателен для заполнения.',
+            'email.required' => trans('api.validation.auth.login.email.required'),
+            'email.email' => trans('api.validation.auth.login.email.email'),
+            'password.required' => trans('api.validation.auth.login.password.required'),
         ];
     }
 

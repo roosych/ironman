@@ -30,10 +30,14 @@ class DeleteFcmTokenRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'token.required' => 'FCM токен обязателен.',
-            'token.string' => 'FCM токен должен быть строкой.',
-            'token.max' => 'FCM токен не должен превышать 500 символов.',
+            'token.required' => trans('api.validation.fcm.delete_token.token.required'),
+            'token.string' => trans('api.validation.fcm.delete_token.token.string'),
+            'token.max' => trans('api.validation.fcm.delete_token.token.max'),
         ];
     }
 

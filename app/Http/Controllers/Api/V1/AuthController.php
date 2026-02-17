@@ -21,6 +21,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -84,7 +85,7 @@ class AuthController extends Controller
     private function detectLocale(Request $request): string
     {
         // Check if locale is provided in request
-        if ($request->has('locale') && in_array($request->input('locale'), ['ru', 'en'], true)) {
+        if ($request->has('locale') && in_array($request->input('locale'), ['ru', 'en', 'az'], true)) {
             return $request->input('locale');
         }
 
@@ -96,7 +97,7 @@ class AuthController extends Controller
             foreach ($languages as $lang) {
                 $lang = trim(explode(';', $lang)[0]);
                 $lang = strtolower(explode('-', $lang)[0]); // Get main language code
-                if (in_array($lang, ['ru', 'en'], true)) {
+                if (in_array($lang, ['ru', 'en', 'az'], true)) {
                     return $lang;
                 }
             }
@@ -136,24 +137,39 @@ class AuthController extends Controller
         return $translated;
     }
 
+
     /** Register a new user */
     public function register(RegisterRequest $request): JsonResponse
     {
         // Use locale from request if provided, otherwise detect from headers
         $locale = $request->safe()->locale ?? $this->detectLocale($request);
 
-        $user = User::create([
-            'name' => $request->safe()->name,
-            'email' => $request->safe()->email,
-            'password' => Hash::make($request->safe()->password),
-            'locale' => $locale,
-        ]);
+        // Создаем пользователя и профиль атлета в транзакции
+        $user = DB::transaction(function () use ($request, $locale) {
+            // Создаем пользователя
+            $user = User::create([
+                'name' => $request->safe()->name,
+                'email' => $request->safe()->email,
+                'password' => Hash::make($request->safe()->password),
+                'locale' => $locale,
+            ]);
+
+            // Сразу создаем профиль атлета
+            $user->profile()->create([
+                'admin_full_name' => $request->safe()->name,
+                'country_iso' => strtoupper($request->safe()->country_iso),
+                'role' => 'athlete',
+                'ironman_number' => 0,
+            ]);
+
+            return $user;
+        });
 
         // event(new Registered($user));
 
         $user->notify(new VerifyEmailNotification);
 
-        // Загружаем relations для консистентности ответа (будут null/empty для нового пользователя)
+        // Загружаем relations для консистентности ответа
         $this->loadUserWithProfile($user);
 
         $token = $user->createToken('auth_token')->plainTextToken;

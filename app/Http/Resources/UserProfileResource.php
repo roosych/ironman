@@ -36,9 +36,6 @@ class UserProfileResource extends JsonResource
                 ->count();
         }
 
-        // Приводим code_used к boolean (null = false)
-        $codeUsed = (bool) $this->code_used;
-
         $data = [
             'id' => $this->id,
             'role' => $this->role,
@@ -51,13 +48,7 @@ class UserProfileResource extends JsonResource
                 'instagram' => null,
                 'facebook' => null,
             ],
-            'code_used' => $codeUsed,
         ];
-
-        // Возвращаем код только если он еще не использован и существует
-        if (!$codeUsed && $this->code) {
-            $data['code'] = $this->code;
-        }
 
         // Photos - всегда объект (пустой {} или с данными)
         if ($user && $user->relationLoaded('photos')) {

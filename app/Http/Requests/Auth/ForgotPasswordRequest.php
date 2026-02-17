@@ -30,9 +30,13 @@ class ForgotPasswordRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? $this->input('locale') ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'email.required' => 'Email обязателен для заполнения.',
-            'email.email' => 'Введите корректный email адрес.',
+            'email.required' => trans('api.validation.auth.forgot_password.email.required'),
+            'email.email' => trans('api.validation.auth.forgot_password.email.email'),
         ];
     }
 

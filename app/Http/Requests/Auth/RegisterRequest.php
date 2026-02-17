@@ -26,6 +26,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'locale' => ['sometimes', 'string', 'in:ru,en'],
+            'country_iso' => ['required', 'string', 'size:2', 'regex:/^[A-Z]{2}$/'],
         ];
     }
 
@@ -34,14 +35,20 @@ class RegisterRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? $this->input('locale') ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'name.required' => 'Имя обязательно для заполнения.',
-            'email.required' => 'Email обязателен для заполнения.',
-            'email.email' => 'Введите корректный email адрес.',
-            // Сообщение без раскрытия существования аккаунта
-            'email.unique' => 'Невозможно выполнить регистрацию с указанными данными.',
-            'password.required' => 'Пароль обязателен для заполнения.',
-            'password.confirmed' => 'Пароли не совпадают.',
+            'name.required' => trans('api.validation.auth.register.name.required'),
+            'email.required' => trans('api.validation.auth.register.email.required'),
+            'email.email' => trans('api.validation.auth.register.email.email'),
+            'email.unique' => trans('api.validation.auth.register.email.unique'),
+            'password.required' => trans('api.validation.auth.register.password.required'),
+            'password.confirmed' => trans('api.validation.auth.register.password.confirmed'),
+            'country_iso.required' => trans('api.validation.auth.register.country_iso.required'),
+            'country_iso.size' => trans('api.validation.auth.register.country_iso.size'),
+            'country_iso.regex' => trans('api.validation.auth.register.country_iso.regex'),
         ];
     }
 

@@ -16,6 +16,7 @@ use App\Services\UserProfileService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class ProfileController extends Controller
 {
@@ -24,6 +25,35 @@ class ProfileController extends Controller
     public function __construct(
         private readonly UserProfileService $profileService
     ) {}
+
+    /**
+     * Get locale for response translation.
+     */
+    private function getResponseLocale(Request $request): string
+    {
+        $user = $request->user();
+        if ($user && $user->locale) {
+            return $user->locale;
+        }
+
+        return config('app.locale', 'en');
+    }
+
+    /**
+     * Translate message using request locale.
+     */
+    private function trans(Request $request, string $key, array $params = []): string
+    {
+        $locale = $this->getResponseLocale($request);
+        $originalLocale = App::getLocale();
+        App::setLocale($locale);
+
+        $translated = trans($key, $params);
+
+        App::setLocale($originalLocale);
+
+        return $translated;
+    }
 
     /**
      * Get current user profile with photos.
@@ -66,6 +96,7 @@ class ProfileController extends Controller
         $profile->setRelation('user', $user);
 
         return $this->successResponse([
+            'message' => $this->trans($request, 'api.profile.updated'),
             'data' => [
                 'profile' => UserProfileResource::make($profile),
             ],
@@ -138,98 +169,18 @@ class ProfileController extends Controller
 
         if (! $photo) {
             return $this->errorResponse([
-                'photo_id' => ['Фотография не найдена или не принадлежит вам.'],
+                'photo_id' => [$this->trans($request, 'api.photo.not_found_or_unauthorized')],
             ], 404);
         }
 
         $this->profileService->deletePhoto($user, $photoId);
 
         return $this->successResponse([
-            'message' => 'Фотография успешно удалена.',
+            'message' => $this->trans($request, 'api.photo.deleted'),
         ]);
     }
 
 
-    /**
-     * Link an existing profile to the authenticated user by code.
-     */
-    public function link(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'code' => ['required', 'string', 'size:6', 'regex:/^[1-9A-HJ-NP-Za-hj-np-z]{6}$/i'],
-        ]);
-
-        $user = $request->user();
-
-        // Проверяем, что у пользователя еще нет профиля
-        $existingProfile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
-            ->where('user_id', $user->id)
-            ->first();
-
-        if ($existingProfile) {
-            return $this->errorResponse([
-                'profile' => ['PROFILE_ALREADY_EXISTS'],
-            ], 422, 'PROFILE_ALREADY_EXISTS');
-        }
-
-        // Приводим код к верхнему регистру для поиска
-        $code = strtoupper($validated['code']);
-
-        // Получаем профиль по коду
-        $profile = UserProfile::withoutGlobalScope('hide_reviewer_profiles')
-            ->where('code', $code)
-            ->where('role', 'athlete')
-            ->first();
-
-        if (!$profile) {
-            return $this->errorResponse([
-                'code' => ['CODE_NOT_FOUND'],
-            ], 404, 'CODE_NOT_FOUND');
-        }
-
-        // Проверяем, что код еще не использован
-        if ($profile->code_used) {
-            return $this->errorResponse([
-                'code' => ['CODE_ALREADY_USED'],
-            ], 422, 'CODE_ALREADY_USED');
-        }
-
-        // Проверяем, что профиль не привязан к другому пользователю
-        if ($profile->user_id !== null) {
-            return $this->errorResponse([
-                'code' => ['CODE_ALREADY_LINKED'],
-            ], 422, 'CODE_ALREADY_LINKED');
-        }
-
-        // Привязываем профиль к пользователю и отмечаем код как использованный
-        $profile->update([
-            'user_id' => $user->id,
-            'code_used' => true,
-        ]);
-
-        // Обновляем admin_full_name из имени пользователя, если не установлено
-        if (!$profile->admin_full_name) {
-            $profile->update(['admin_full_name' => $user->name]);
-        }
-
-        // Загружаем профиль с проверенными результатами для ответа
-        $profile->load(['raceResults' => function ($query) {
-            $query->where('is_approved', true)
-                ->orderByDesc('race_date');
-        }]);
-        $profile->setRelation('user', $user);
-        $user->setRelation('profile', $profile);
-
-        // Dispatch event for FCM notification
-        event(new \App\Events\ProfileSynced($user, $profile));
-
-        return $this->successResponse([
-            'message' => 'PROFILE_LINKED_SUCCESS',
-            'data' => [
-                'profile' => UserProfileResource::make($profile),
-            ],
-        ]);
-    }
 
     /**
      * Create a new empty profile for the authenticated user.

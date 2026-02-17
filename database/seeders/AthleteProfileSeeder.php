@@ -124,16 +124,9 @@ class AthleteProfileSeeder extends Seeder
                     'ironman_number' => $athlete['ironman_number'],
                     'bio' => null,
                     'social_links' => null,
-                    'code' => null,
-                    'code_used' => false,
                 ]
             );
 
-            // Генерируем уникальный код, если его еще нет
-            if (!$profile->code) {
-                $code = $this->generateUniqueCode();
-                $profile->update(['code' => $code]);
-            }
 
             if ($profile->wasRecentlyCreated) {
                 $created++;
@@ -145,32 +138,4 @@ class AthleteProfileSeeder extends Seeder
         $this->command->info("Профили атлетов: создано {$created}, уже существовало {$existing}");
     }
 
-    /**
-     * Генерирует уникальный код для профиля.
-     * Формат: 6 символов (буквы и цифры, без 0, O, I, L для избежания путаницы).
-     */
-    private function generateUniqueCode(): string
-    {
-        $characters = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-        $code = '';
-        $maxAttempts = 100;
-        $attempt = 0;
-
-        do {
-            $code = '';
-            for ($i = 0; $i < 6; $i++) {
-                $code .= $characters[random_int(0, strlen($characters) - 1)];
-            }
-            $attempt++;
-        } while (
-            UserProfile::where('code', $code)->exists() && 
-            $attempt < $maxAttempts
-        );
-
-        if ($attempt >= $maxAttempts) {
-            throw new \RuntimeException('Не удалось сгенерировать уникальный код после ' . $maxAttempts . ' попыток.');
-        }
-
-        return $code;
-    }
 }

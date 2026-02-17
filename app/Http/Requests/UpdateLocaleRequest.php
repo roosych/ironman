@@ -26,7 +26,7 @@ class UpdateLocaleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'locale' => ['required', 'string', 'in:ru,en'],
+            'locale' => ['required', 'string', 'in:ru,en,az'],
         ];
     }
 
@@ -35,9 +35,13 @@ class UpdateLocaleRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? $this->input('locale') ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'locale.required' => 'Язык обязателен для заполнения.',
-            'locale.in' => 'Поддерживаются только языки: ru, en.',
+            'locale.required' => trans('api.validation.update_locale.locale.required'),
+            'locale.in' => trans('api.validation.update_locale.locale.in'),
         ];
     }
 

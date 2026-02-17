@@ -31,12 +31,16 @@ class ChangePasswordRequest extends FormRequest
      */
     public function messages(): array
     {
+        $user = $this->user();
+        $locale = $user?->locale ?? config('app.locale', 'en');
+        app()->setLocale($locale);
+
         return [
-            'current_password.required' => 'Текущий пароль обязателен для заполнения.',
-            'new_password.required' => 'Новый пароль обязателен для заполнения.',
-            'new_password.min' => 'Новый пароль должен быть не менее 8 символов.',
-            'new_password.different' => 'Новый пароль должен отличаться от текущего.',
-            'new_password.confirmed' => 'Подтверждение пароля не совпадает.',
+            'current_password.required' => trans('api.validation.user.change_password.current_password.required'),
+            'new_password.required' => trans('api.validation.user.change_password.new_password.required'),
+            'new_password.min' => trans('api.validation.user.change_password.new_password.min'),
+            'new_password.different' => trans('api.validation.user.change_password.new_password.different'),
+            'new_password.confirmed' => trans('api.validation.user.change_password.new_password.confirmed'),
         ];
     }
 
