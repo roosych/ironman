@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminRaceResultController;
+use App\Http\Controllers\Admin\AdminResultTransferController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Middleware\EnsureUserIsAdmin;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return response()->json([
-        'name' => 'IronStats API',
+        'name' => 'IRON API',
         'status' => 'ok',
         'version' => 'v1',
         'environment' => app()->environment(),
@@ -52,4 +53,11 @@ Route::middleware(['auth:web', EnsureUserIsAdmin::class])->prefix('admin')->name
     Route::post('/race-results', [AdminRaceResultController::class, 'store'])->name('race-results.store');
     Route::post('/race-results/{raceResult}/approve', [AdminRaceResultController::class, 'approve'])->name('race-results.approve');
     Route::post('/race-results/{raceResult}/reject', [AdminRaceResultController::class, 'reject'])->name('race-results.reject');
+
+    // Result transfer requests
+    Route::get('/transfer-requests', [AdminResultTransferController::class, 'index'])->name('transfer-requests.index');
+    Route::get('/transfer-requests/stats', [AdminResultTransferController::class, 'stats'])->name('transfer-requests.stats');
+    Route::get('/transfer-requests/{id}', [AdminResultTransferController::class, 'show'])->name('transfer-requests.show');
+    Route::post('/transfer-requests/{id}/approve', [AdminResultTransferController::class, 'approve'])->name('transfer-requests.approve');
+    Route::post('/transfer-requests/{id}/reject', [AdminResultTransferController::class, 'reject'])->name('transfer-requests.reject');
 });

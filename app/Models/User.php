@@ -82,6 +82,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Notification::class);
     }
 
+    public function resultTransferRequests(): HasMany
+    {
+        return $this->hasMany(ResultTransferRequest::class);
+    }
+
     /**
      * Check if user is admin.
      * User is admin if is_admin is true OR profile has admin role.
@@ -94,6 +99,22 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $profile = $this->profile;
         return $profile && $profile->isAdmin();
+    }
+
+    /**
+     * Проверить, есть ли у пользователя активный (pending) запрос на перенос результатов.
+     */
+    public function hasPendingTransferRequest(): bool
+    {
+        return $this->resultTransferRequests()->pending()->exists();
+    }
+
+    /**
+     * Проверить, есть ли у пользователя одобренный запрос на перенос результатов.
+     */
+    public function hasApprovedTransferRequest(): bool
+    {
+        return $this->resultTransferRequests()->approved()->exists();
     }
 
     /**

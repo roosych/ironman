@@ -193,6 +193,18 @@ return [
                 ],
             ],
         ],
+        'transfer' => [
+            'source_athlete_id' => [
+                'required' => 'Source athlete ID is required.',
+                'integer' => 'Source athlete ID must be an integer.',
+                'exists' => 'Selected athlete not found or not available for result transfer.',
+            ],
+            'comment' => [
+                'required' => 'Comment is required when rejecting a request.',
+                'string' => 'Comment must be a string.',
+                'max' => 'Comment must not exceed 1000 characters.',
+            ],
+        ],
     ],
     'profile' => [
         'updated' => 'Profile successfully updated.',
@@ -207,6 +219,17 @@ return [
         'not_found_or_not_approved' => 'Result not found or not approved.',
         'submitted_for_approval' => 'Result submitted for admin approval.',
         'deleted' => 'Result deleted.',
+    ],
+    'transfer' => [
+        'request_created' => 'Result transfer request successfully created.',
+        'request_not_found' => 'Result transfer request not found.',
+        'request_approved' => 'Result transfer request approved.',
+        'request_rejected' => 'Result transfer request rejected.',
+        'no_request' => 'You have no active result transfer requests.',
+        'already_has_pending' => 'You already have an active result transfer request.',
+        'already_has_approved' => 'You already have an approved result transfer request.',
+        'athlete_not_available' => 'This athlete is not available for result transfer.',
+        'athlete_has_pending' => 'This athlete already has an active result transfer request.',
     ],
 ];
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PolicyController;
 use App\Http\Controllers\Api\V1\RaceResultController;
 use App\Http\Controllers\Api\V1\RankingController;
+use App\Http\Controllers\Api\V1\ResultTransferController;
 use App\Http\Controllers\Api\V1\UpcomingRaceController;
 use App\Http\Controllers\Api\V1\User\FcmTokenController;
 use App\Http\Controllers\Api\V1\User\PasswordController;
@@ -117,6 +118,16 @@ Route::middleware('auth:sanctum')->group(function (): void {
         ->name('v1.upcoming-races.store');
 });
 
+// Protected result transfer routes
+Route::middleware('auth:sanctum')->prefix('transfer')->group(function (): void {
+    Route::get('/eligible-athletes', [ResultTransferController::class, 'eligibleAthletes'])
+        ->name('v1.transfer.eligible-athletes');
+    Route::post('/request', [ResultTransferController::class, 'store'])
+        ->name('v1.transfer.request');
+    Route::get('/current', [ResultTransferController::class, 'current'])
+        ->name('v1.transfer.current');
+});
+
 // Public race results routes
 Route::get('/race-results', [RaceResultController::class, 'index'])->name('v1.race-results.index');
 Route::get('/race-results/{raceResult}', [RaceResultController::class, 'show'])->name('v1.race-results.show');
@@ -133,7 +144,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
 Route::middleware('auth:sanctum')->prefix('admin')->group(function (): void {
     Route::post('/users/{user}/link-profile/{profile}', [AdminController::class, 'linkProfileToUser'])
         ->name('v1.admin.users.link-profile');
-    
+
     // Race results approval
     Route::get('/race-results/pending', [AdminController::class, 'pendingRaceResults'])
         ->name('v1.admin.race-results.pending');
@@ -141,4 +152,5 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function (): void {
         ->name('v1.admin.race-results.approve');
     Route::delete('/race-results/{raceResult}/reject', [AdminController::class, 'rejectRaceResult'])
         ->name('v1.admin.race-results.reject');
+
 });
