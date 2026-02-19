@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\AthleteController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PolicyController;
+use App\Http\Controllers\Api\V1\RaceController;
 use App\Http\Controllers\Api\V1\RaceResultController;
 use App\Http\Controllers\Api\V1\RankingController;
 use App\Http\Controllers\Api\V1\ResultTransferController;
@@ -126,6 +127,11 @@ Route::middleware('auth:sanctum')->prefix('transfer')->group(function (): void {
         ->name('v1.transfer.request');
     Route::get('/current', [ResultTransferController::class, 'current'])
         ->name('v1.transfer.current');
+});
+
+// Protected races routes
+Route::middleware('auth:sanctum')->group(function (): void {
+    Route::get('/races', [RaceController::class, 'index'])->name('v1.races.index');
 });
 
 // Public race results routes

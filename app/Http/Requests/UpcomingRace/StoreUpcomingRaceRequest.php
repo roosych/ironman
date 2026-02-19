@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\UpcomingRace;
 
-use App\Enums\RaceType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreUpcomingRaceRequest extends FormRequest
 {
@@ -21,9 +19,7 @@ class StoreUpcomingRaceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'race_type' => ['required', Rule::enum(RaceType::class)],
-            'location' => ['required', 'string', 'max:255'],
-            'race_date' => ['required', 'date', 'after:today'],
+            'race_id' => ['required', 'integer', 'exists:races,id'],
         ];
     }
 
@@ -37,13 +33,9 @@ class StoreUpcomingRaceRequest extends FormRequest
         app()->setLocale($locale);
 
         return [
-            'race_type.required' => trans('api.validation.upcoming_race.store.race_type.required'),
-            'race_type.Illuminate\Validation\Rules\Enum' => trans('api.validation.upcoming_race.store.race_type.enum'),
-            'location.required' => trans('api.validation.upcoming_race.store.location.required'),
-            'location.max' => trans('api.validation.upcoming_race.store.location.max'),
-            'race_date.required' => trans('api.validation.upcoming_race.store.race_date.required'),
-            'race_date.date' => trans('api.validation.upcoming_race.store.race_date.date'),
-            'race_date.after' => trans('api.validation.upcoming_race.store.race_date.after'),
+            'race_id.required' => trans('api.validation.upcoming_race.store.race_id.required'),
+            'race_id.integer' => trans('api.validation.upcoming_race.store.race_id.integer'),
+            'race_id.exists' => trans('api.validation.upcoming_race.store.race_id.exists'),
         ];
     }
 }

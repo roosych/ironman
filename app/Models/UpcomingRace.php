@@ -15,20 +15,21 @@ class UpcomingRace extends Model
 
     protected $fillable = [
         'user_profile_id',
-        'race_type',
-        'location',
-        'race_date',
+        'race_id',
         'is_active',
     ];
 
     protected $casts = [
-        'race_type' => RaceType::class,
-        'race_date' => 'date',
         'is_active' => 'boolean',
     ];
 
-    public function profile(): BelongsTo
+    public function userProfile(): BelongsTo
     {
         return $this->belongsTo(UserProfile::class, 'user_profile_id');
+    }
+
+    public function race(): BelongsTo
+    {
+        return $this->belongsTo(Race::class);
     }
 }

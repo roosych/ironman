@@ -129,18 +129,10 @@ return [
         ],
         'upcoming_race' => [
             'store' => [
-                'race_type' => [
-                    'required' => 'Race type is required.',
-                    'enum' => 'Invalid race type.',
-                ],
-                'location' => [
-                    'required' => 'Location is required.',
-                    'max' => 'Location must not exceed 255 characters.',
-                ],
-                'race_date' => [
-                    'required' => 'Race date is required.',
-                    'date' => 'Invalid date format.',
-                    'after' => 'Race date must be in the future.',
+                'race_id' => [
+                    'required' => 'Race is required.',
+                    'integer' => 'Race ID must be a number.',
+                    'exists' => 'Selected race not found.',
                 ],
             ],
         ],
@@ -210,6 +202,9 @@ return [
         'updated' => 'Profile successfully updated.',
         'country_iso_updated' => 'Country code successfully updated.',
         'not_found' => 'Profile not found.',
+    ],
+    'upcoming_race' => [
+        'created' => 'Upcoming race successfully added.',
     ],
     'photo' => [
         'not_found_or_unauthorized' => 'Photo not found or does not belong to you.',
