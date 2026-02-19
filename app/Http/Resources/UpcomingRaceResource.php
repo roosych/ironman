@@ -22,7 +22,7 @@ class UpcomingRaceResource extends JsonResource
             'race_type_label' => $this->race?->type?->label(),
             'location' => $this->race?->location,
             'country_iso' => $this->race?->country_iso,
-            'race_date' => $this->race?->date?->toDateString(),
+            'race_date' => $this->race?->date?->toISOString(),
             'is_active' => $this->is_active,
             'created_by' => [
                 'id' => $this->userProfile?->id,

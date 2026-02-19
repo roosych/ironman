@@ -99,10 +99,20 @@ class UpcomingRaceController extends Controller
         // Select only upcoming_races columns to avoid conflicts
         $query->select('upcoming_races.*');
 
-        $races = $query->get();
+        // Get pagination parameters
+        $perPage = $request->integer('per_page', 15);
+        $perPage = min($perPage, 100); // Max 100 items per page
+
+        $races = $query->paginate($perPage);
 
         return $this->successResponse([
-            'data' => UpcomingRaceResource::collection($races)
+            'data' => UpcomingRaceResource::collection($races),
+            'meta' => [
+                'current_page' => $races->currentPage(),
+                'last_page' => $races->lastPage(),
+                'per_page' => $races->perPage(),
+                'total' => $races->total(),
+            ],
         ]);
     }
 

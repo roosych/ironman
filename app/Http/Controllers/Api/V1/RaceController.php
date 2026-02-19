@@ -41,6 +41,19 @@ class RaceController extends Controller
 
         $query = Race::where('is_active', true);
 
+        // Исключить гонки, которые уже есть у пользователя в upcoming_races
+        $user = $request->user();
+        if ($user && $user->profile) {
+            $userRaceIds = $user->profile->upcomingRaces()
+                ->where('is_active', true)
+                ->pluck('race_id')
+                ->toArray();
+
+            if (!empty($userRaceIds)) {
+                $query->whereNotIn('id', $userRaceIds);
+            }
+        }
+
         // Применить фильтры
         if (!empty($validated['search'])) {
             $query->where('location', 'like', '%' . $validated['search'] . '%');
