@@ -137,15 +137,15 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if($request->status === 'pending')
+                                    @if($request->status->isPending())
                                         <span class="badge bg-warning text-dark">
                                             <i class="bi bi-clock-history"></i> В ожидании
                                         </span>
-                                    @elseif($request->status === 'approved')
+                                    @elseif($request->status->isApproved())
                                         <span class="badge bg-success">
                                             <i class="bi bi-check-circle"></i> Одобрено
                                         </span>
-                                    @elseif($request->status === 'rejected')
+                                    @elseif($request->status->isRejected())
                                         <span class="badge bg-danger">
                                             <i class="bi bi-x-circle"></i> Отклонено
                                         </span>
@@ -164,7 +164,7 @@
                                             <i class="bi bi-eye"></i>
                                         </a>
 
-                                        @if($request->status === 'pending')
+                                        @if($request->status->isPending())
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-success"
                                                     data-bs-toggle="modal"

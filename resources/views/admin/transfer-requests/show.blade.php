@@ -14,7 +14,7 @@
             <i class="bi bi-arrow-left"></i> Назад к списку
         </a>
 
-        @if($transferRequest->status === 'pending')
+        @if($transferRequest->status->isPending())
             <button type="button"
                     class="btn btn-success"
                     data-bs-toggle="modal"
@@ -40,15 +40,15 @@
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h5 class="mb-1">
-                            @if($transferRequest->status === 'pending')
+                            @if($transferRequest->status->isPending())
                                 <span class="badge bg-warning text-dark fs-6">
                                     <i class="bi bi-clock-history"></i> В ожидании рассмотрения
                                 </span>
-                            @elseif($transferRequest->status === 'approved')
+                            @elseif($transferRequest->status->isApproved())
                                 <span class="badge bg-success fs-6">
                                     <i class="bi bi-check-circle"></i> Одобрено
                                 </span>
-                            @elseif($transferRequest->status === 'rejected')
+                            @elseif($transferRequest->status->isRejected())
                                 <span class="badge bg-danger fs-6">
                                     <i class="bi bi-x-circle"></i> Отклонено
                                 </span>
@@ -66,15 +66,15 @@
                         </div>
                     </div>
                     <div class="col-md-4 text-end">
-                        @if($transferRequest->status === 'pending')
+                        @if($transferRequest->status->isPending())
                             <span class="text-warning">
                                 <i class="bi bi-exclamation-triangle fs-2"></i>
                             </span>
-                        @elseif($transferRequest->status === 'approved')
+                        @elseif($transferRequest->status->isApproved())
                             <span class="text-success">
                                 <i class="bi bi-check-circle fs-2"></i>
                             </span>
-                        @elseif($transferRequest->status === 'rejected')
+                        @elseif($transferRequest->status->isRejected())
                             <span class="text-danger">
                                 <i class="bi bi-x-circle fs-2"></i>
                             </span>
