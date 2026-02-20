@@ -23,6 +23,7 @@ class UserProfile extends Model
         'ironman_number',
         'bio',
         'social_links',
+        'results_transferred',
     ];
 
     protected $casts = [
