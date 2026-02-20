@@ -94,6 +94,9 @@
                     <a href="{{ route('admin.race-results.create') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-plus-circle"></i> Создать результат
                     </a>
+                    <a href="{{ route('admin.transfer-requests.index') }}" class="list-group-item list-group-item-action {{ (str_starts_with(request()->route()->getName() ?? '', 'admin.transfer-requests.')) ? 'active' : '' }}">
+                        <i class="bi bi-arrow-left-right"></i> Трансфер результатов
+                    </a>
                 </div>
             </div>
 

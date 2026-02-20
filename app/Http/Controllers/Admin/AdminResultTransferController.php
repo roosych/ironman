@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\TransferRequestApproved;
+use App\Events\TransferRequestRejected;
 use App\Http\Controllers\Controller;
 use App\Models\ResultTransferRequest;
 use App\Services\ResultTransferService;
@@ -47,7 +49,7 @@ class AdminResultTransferController extends Controller
         $transferRequest = ResultTransferRequest::with([
             'user:id,name,email',
             'sourceAthlete:id,admin_full_name,ironman_number,country_iso',
-            'sourceAthlete.raceResults:id,user_profile_id,race_date,location,race_type,total_time',
+            'sourceAthlete.raceResults:id,user_profile_id,race_date,location,race_type,swim_time,t1_time,bike_time,t2_time,run_time,total_time,overall_position,age_group_position',
             'reviewedBy:id,name',
         ])->findOrFail($id);
 
@@ -86,6 +88,9 @@ class AdminResultTransferController extends Controller
                 $request->user(),
                 $request->input('comment')
             );
+
+            // Dispatch event for FCM notification
+            event(new TransferRequestApproved($approvedRequest));
 
             $message = 'Запрос на перенос результатов успешно одобрен.';
 
@@ -133,6 +138,9 @@ class AdminResultTransferController extends Controller
                 $request->user(),
                 $request->input('comment')
             );
+
+            // Dispatch event for FCM notification
+            event(new TransferRequestRejected($rejectedRequest));
 
             $message = 'Запрос на перенос результатов отклонён.';
 

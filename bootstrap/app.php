@@ -31,6 +31,11 @@ return Application::configure(basePath: dirname(__DIR__))
                     ],
                 ], 401);
             }
+
+            // Handle authentication errors for web/admin routes
+            if ($request->is('admin/*')) {
+                return redirect()->route('admin.login');
+            }
         });
 
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {

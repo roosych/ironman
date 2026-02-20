@@ -23,5 +23,13 @@ return [
         'title' => 'Password Changed',
         'body' => 'Your account password has been successfully changed. All other sessions have been terminated.',
     ],
+    'transfer_request_approved' => [
+        'title' => 'Transfer Request Approved',
+        'body' => 'Your request to transfer :results_count result(s) from athlete ":athlete_name" has been approved.',
+    ],
+    'transfer_request_rejected' => [
+        'title' => 'Transfer Request Rejected',
+        'body' => 'Your request to transfer results from athlete ":athlete_name" has been rejected. Reason: :comment',
+    ],
 ];
 
