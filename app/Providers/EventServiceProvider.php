@@ -8,14 +8,10 @@ use App\Events\RaceApproved;
 use App\Events\RaceCreated;
 use App\Events\PasswordChanged;
 use App\Events\ProfileSynced;
-use App\Events\TransferRequestApproved;
-use App\Events\TransferRequestRejected;
 use App\Listeners\SendRaceApprovedNotification;
 use App\Listeners\SendRaceCreatedNotification;
 use App\Listeners\SendPasswordChangedNotification;
 use App\Listeners\SendProfileSyncedNotification;
-use App\Listeners\SendTransferRequestApprovedNotification;
-use App\Listeners\SendTransferRequestRejectedNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -37,12 +33,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         ProfileSynced::class => [
             SendProfileSyncedNotification::class,
-        ],
-        TransferRequestApproved::class => [
-            SendTransferRequestApprovedNotification::class,
-        ],
-        TransferRequestRejected::class => [
-            SendTransferRequestRejectedNotification::class,
         ],
     ];
 
