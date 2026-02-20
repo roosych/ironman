@@ -30,6 +30,11 @@ Route::get('/reset-password', [PasswordResetController::class, 'showResetForm'])
 Route::get('/reset-password/success', [PasswordResetController::class, 'showSuccess'])
     ->name('password.reset.success');
 
+// Generic login route (redirects to admin login)
+Route::get('/login', function () {
+    return redirect()->route('admin.login');
+})->name('login');
+
 // Admin authentication routes (public)
 Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('guest:web')->group(function (): void {
