@@ -9,7 +9,7 @@ return [
         'line' => 'Please click the button below to verify your email address.',
         'action' => 'Verify Email',
         'footer' => 'If you did not create an account, no further action is required.',
-        'salutation' => 'Regards, :app_name Team',
+        'salutation' => 'Regards, :app_name',
     ],
     'reset_password' => [
         'subject' => 'Reset Password',
@@ -18,7 +18,7 @@ return [
         'action' => 'Reset Password',
         'expire_line' => 'This password reset link will expire in :minutes minutes.',
         'footer' => 'If you did not request a password reset, no further action is required.',
-        'salutation' => 'Regards, :app_name Team',
+        'salutation' => 'Regards, :app_name',
     ],
 ];
 
