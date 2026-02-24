@@ -50,7 +50,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time' => 20868,  // 05:47:48
                 't2_time'   => 224,    // 00:03:44
                 'run_time'  => 16208,  // 04:30:08
-                'total_time'=> 41748,  // 11:35:46
+                'total_time'=> 41746,  // 11:35:46
             ],
         
             [
@@ -63,7 +63,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time' => 18466,  // 05:07:46
                 't2_time'   => 269,    // 00:04:29
                 'run_time'  => 15446,  // 04:17:26
-                'total_time'=> 37969,  // 10:32:50
+                'total_time'=> 37970,  // 10:32:50
             ],
         
             [
@@ -76,7 +76,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time' => 20321,  // 05:38:41
                 't2_time'   => 433,    // 00:07:13
                 'run_time'  => 13265,  // 03:41:05
-                'total_time'=> 38929,  // 10:48:48
+                'total_time'=> 38928,  // 10:48:48
             ],
         
             [
@@ -89,7 +89,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time' => 24357,  // 06:45:57
                 't2_time'   => 234,    // 00:03:54
                 'run_time'  => 18614,  // 05:10:14
-                'total_time'=> 47168,  // 13:06:05
+                'total_time'=> 47165,  // 13:06:05
             ],
         
             [
@@ -102,7 +102,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time' => 18835,  // 05:13:55
                 't2_time'   => 340,    // 00:05:40
                 'run_time'  => 17586,  // 04:53:06
-                'total_time'=> 40396,  // 11:13:13
+                'total_time'=> 40393,  // 11:13:13
             ],
         
             [
@@ -115,7 +115,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time' => 9010,   // 02:30:10
                 't2_time'   => 160,    // 00:02:40
                 'run_time'  => 5256,   // 01:27:36
-                'total_time'=> 16784,  // 04:39:42
+                'total_time'=> 16782,  // 04:39:42
             ],
         
             [
@@ -536,7 +536,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10561,  // 02:56:01
                 't2_time'    => 335,    // 00:05:35
                 'run_time'   => 6993,   // 01:56:33
-                'total_time' => 20692,  // 05:46:31
+                'total_time' => 20791,  // 05:46:31
             ],
         
             [
@@ -600,7 +600,7 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 340,    // 00:05:40
                 'bike_time'  => 17234,  // 04:47:14
                 't2_time'    => 193,    // 00:03:13
-                'run_time'   => 12118,  // 03:21:18
+                'run_time'   => 12078,  // 03:21:18
                 'total_time' => 34485,  // 09:37:15 (≈ 09:37:22)
             ],
         
@@ -640,7 +640,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 18105,  // 05:01:45
                 't2_time'    => 336,    // 00:05:36
                 'run_time'   => 13166,  // 03:39:26
-                'total_time' => 36731,  // 10:12:08
+                'total_time' => 36728,  // 10:12:08
             ],
         
             [
@@ -649,7 +649,7 @@ class RaceResultsSeeder extends Seeder
                 'location' => 'Tallinn, Estonia',
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 3074,   // 00:51:14
-                't1_time'    => 172,    // 00:02:42
+                't1_time'    => 162,    // 00:02:42
                 'bike_time'  => 9384,   // 02:36:24
                 't2_time'    => 176,    // 00:02:56
                 'run_time'   => 6559,   // 01:49:19
@@ -665,7 +665,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 29606,  // 08:13:26
                 't2_time'    => 653,    // 00:10:53
                 'run_time'   => 17941,  // 04:59:01
-                'total_time' => 53856,  // 14:59:14
+                'total_time' => 53954,  // 14:59:14
             ],
         
             [
@@ -678,7 +678,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11076,  // 03:04:36
                 't2_time'    => 553,    // 00:09:13
                 'run_time'   => 6712,   // 01:51:52
-                'total_time' => 21617,  // 05:58:34
+                'total_time' => 21514,  // 05:58:34
             ],
         
             [
@@ -691,7 +691,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 31250,  // 08:40:50
                 't2_time'    => 499,    // 00:08:19
                 'run_time'   => 18668,  // 05:11:08
-                'total_time' => 55701,  // 15:36:42
+                'total_time' => 56202,  // 15:36:42
             ],
         
             [
@@ -704,7 +704,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10667,  // 02:57:47
                 't2_time'    => 478,    // 00:07:58
                 'run_time'   => 7687,   // 02:08:07
-                'total_time' => 21925,  // 06:05:23
+                'total_time' => 21923,  // 06:05:23
             ],
         
             [
@@ -743,7 +743,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10556,  // 02:55:56
                 't2_time'    => 511,    // 00:08:31
                 'run_time'   => 7147,   // 01:59:07
-                'total_time' => 21241,  // 05:53:58
+                'total_time' => 21238,  // 05:53:58
             ],
         
             [
@@ -794,7 +794,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9257,   // 02:34:17
                 't2_time'    => 348,    // 00:05:48
                 'run_time'   => 6985,   // 01:56:25
-                'total_time' => 19760,  // 05:27:37
+                'total_time' => 19657,  // 05:27:37
             ],
         
             [
@@ -807,7 +807,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 20709,  // 05:45:09
                 't2_time'    => 1144,   // 00:19:04
                 'run_time'   => 15901,  // 04:25:01
-                'total_time' => 43504,  // 12:08:22
+                'total_time' => 43702,  // 12:08:22
             ],
         
             [
@@ -820,7 +820,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 20964,  // 05:49:24
                 't2_time'    => 933,    // 00:15:33
                 'run_time'   => 14746,  // 04:05:46
-                'total_time' => 41912,  // 11:55:10
+                'total_time' => 42910,  // 11:55:10
             ],
         
             [
@@ -858,7 +858,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 21633,  // 06:00:33
                 't2_time'    => 400,    // 00:06:40
                 'run_time'   => 13132,  // 03:38:52
-                'total_time' => 41000,  // 11:29:59
+                'total_time' => 41399,  // 11:29:59
             ],
         
             [
@@ -961,7 +961,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 21140,  // 05:52:20
                 't2_time'    => 443,    // 00:07:23
                 'run_time'   => 17706,  // 04:55:06
-                'total_time' => 44605,  // 12:23:26
+                'total_time' => 44606,  // 12:23:26
             ],
             [
                 'external_id' => 'dushdurov_emil',
@@ -973,7 +973,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 20400,  // 05:40:00
                 't2_time'    => 349,    // 00:05:49
                 'run_time'   => 15233,  // 04:13:53
-                'total_time' => 41407,  // 11:31:45
+                'total_time' => 41505,  // 11:31:45
             ],
         
             [
@@ -986,7 +986,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 21535,  // 05:58:55
                 't2_time'    => 415,    // 00:06:55
                 'run_time'   => 15721,  // 04:22:01
-                'total_time' => 40172,  // 12:02:51
+                'total_time' => 43371,  // 12:02:51
             ],
         
             [
@@ -999,7 +999,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 22644,  // 06:17:24
                 't2_time'    => 716,    // 00:11:56
                 'run_time'   => 15704,  // 04:21:44
-                'total_time' => 44715,  // 12:26:53
+                'total_time' => 44813,  // 12:26:53
             ],
         
             [
@@ -1025,7 +1025,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10609,  // 02:56:49
                 't2_time'    => 199,    // 00:03:19
                 'run_time'   => 7733,   // 02:08:53
-                'total_time' => 21726,  // 05:57:45
+                'total_time' => 21465,  // 05:57:45
             ],
             [
                 'external_id' => 'tural_mammadov',
@@ -1049,7 +1049,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 12798,  // 03:33:18
                 't2_time'    => 386,    // 00:06:26
                 'run_time'   => 8446,   // 02:20:46
-                'total_time' => 25311,  // 06:55:11
+                'total_time' => 24911,  // 06:55:11
             ],
             [
                 'external_id' => 'aynur_bayramova',
@@ -1061,7 +1061,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 14595,  // 04:03:15
                 't2_time'    => 59,     // 00:00:59
                 'run_time'   => 8394,   // 02:19:54
-                'total_time' => 27248,  // 07:27:08
+                'total_time' => 26828,  // 07:27:08
             ],
             [
                 'external_id' => 'aliyev_azer',
@@ -1073,7 +1073,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 12196,  // 03:23:16
                 't2_time'    => 334,    // 00:05:34
                 'run_time'   => 7479,   // 02:04:39
-                'total_time' => 21309,  // 06:21:47
+                'total_time' => 22907,  // 06:21:47
             ],
             [
                 'external_id' => 'maharramov_ilgar',
@@ -1085,7 +1085,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11337,  // 03:08:57
                 't2_time'    => 499,    // 00:08:19
                 'run_time'   => 7642,   // 02:07:22
-                'total_time' => 22403,  // 06:15:01
+                'total_time' => 22501,  // 06:15:01
             ],
             [
                 'external_id' => 'kazimov_huseyn',
@@ -1133,7 +1133,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11068,  // 03:04:28
                 't2_time'    => 260,    // 00:04:20
                 'run_time'   => 9445,   // 02:37:25
-                'total_time' => 23913,  // 06:38:31
+                'total_time' => 23911,  // 06:38:31
             ],
             [
                 'external_id' => 'farhadzade_farid',
@@ -1145,7 +1145,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10646,  // 02:57:26
                 't2_time'    => 240,    // 00:04:00
                 'run_time'   => 8699,   // 02:24:59
-                'total_time' => 22104,  // 06:16:00
+                'total_time' => 22560,  // 06:16:00
             ],
             [
                 'external_id' => 'farhadzade_farid',
@@ -1154,22 +1154,22 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 2837,   // 00:47:17
                 't1_time'    => 176,    // 00:02:56
-                'bike_time'  => 11390,  // 03:08:10
+                'bike_time'  => 11290,  // 03:08:10
                 't2_time'    => 176,    // 00:02:56
                 'run_time'   => 9001,   // 02:30:01
-                'total_time' => 23480,  // 06:32:38
+                'total_time' => 23558,  // 06:32:38
             ],
             [
                 'external_id' => 'farhadzade_farid',
                 'race_date' => '2022-09-17',
                 'location' => 'Emilia-Romagna, Italy',
                 'race_type' => 'ironman',
-                'swim_time'  => 3598,   // 01:22:49
+                'swim_time'  => 4969,   // 01:22:49
                 't1_time'    => 130,    // 00:02:10
                 'bike_time'  => 25595,  // 07:06:35
                 't2_time'    => 574,    // 00:09:34
-                'run_time'   => 19067,  // 05:12:47
-                'total_time' => 48864,  // 14:01:43
+                'run_time'   => 18767,  // 05:12:47
+                'total_time' => 50503,  // 14:01:43
             ],
             [
                 'external_id' => 'farhadzade_farid',
@@ -1181,7 +1181,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11485,  // 03:11:25
                 't2_time'    => 308,    // 00:05:08
                 'run_time'   => 9791,   // 02:43:11
-                'total_time' => 25103,  // 06:49:50
+                'total_time' => 24590,  // 06:49:50
             ],
             [
                 'external_id' => 'farhadzade_farid',
@@ -1192,7 +1192,7 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 468,    // 00:07:48
                 'bike_time'  => 12484,  // 03:28:04
                 't2_time'    => 238,    // 00:03:58
-                'run_time'   => 11919,  // 03:18:19
+                'run_time'   => 11899,  // 03:18:19
                 'total_time' => 28368,  // 07:52:46 (≈07:58:25)
             ],
             [
@@ -1205,7 +1205,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 13329,  // 03:42:09
                 't2_time'    => 731,    // 00:12:11
                 'run_time'   => 8721,   // 02:25:21
-                'total_time' => 26134,  // 07:17:14
+                'total_time' => 26234,  // 07:17:14
             ],
             [
                 'external_id' => 'aslanzade_ulvi',
@@ -1216,7 +1216,7 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 119,    // 00:01:59
                 'bike_time'  => 10652,  // 02:57:32
                 't2_time'    => 487,    // 00:08:07
-                'run_time'   => 8408,   // 01:45:08
+                'run_time'   => 6308,   // 01:45:08
                 'total_time' => 21831,  // 06:03:51 (≈06:36:25)
             ],
             [
@@ -1229,7 +1229,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9559,   // 02:39:19
                 't2_time'    => 347,    // 00:05:47
                 'run_time'   => 5988,   // 01:39:48
-                'total_time' => 18422,  // 05:08:53
+                'total_time' => 18533,  // 05:08:53
             ],
             [
                 'external_id' => 'aslanzade_ulvi',
@@ -1310,7 +1310,7 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 2757,   // 00:45:57
                 't1_time'    => 145,    // 00:02:25
-                'bike_time'  => 12497,  // 03:26:37
+                'bike_time'  => 12397,  // 03:26:37
                 't2_time'    => 312,    // 00:05:12
                 'run_time'   => 6374,   // 01:46:14
                 'total_time' => 22085,  // 06:08:28 (≈06:21:11)
@@ -1336,7 +1336,7 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 143,    // 00:02:23
                 'bike_time'  => 24638,  // 06:50:38
                 't2_time'    => 436,    // 00:07:16
-                'run_time'   => 16117,  // 04:26:57
+                'run_time'   => 16017,  // 04:26:57
                 'total_time' => 46638,  // 12:57:58 (≈13:11:03)
             ],
             [
@@ -1370,7 +1370,7 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman',
                 'swim_time'  => 5225,    // 01:27:05
                 't1_time'    => 603,     // 00:10:03
-                'bike_time'  => 25816,   // 07:11:56
+                'bike_time'  => 25916,   // 07:11:56
                 't2_time'    => 826,     // 00:13:46
                 'run_time'   => 16819,   // 04:40:19
                 'total_time' => 48709,   // 13:31:29 (≈ 13:43:07 – округлено по сумме этапов)
@@ -1397,7 +1397,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 19367,  // 05:22:47
                 't2_time'    => 498,    // 00:08:18
                 'run_time'   => 15824,  // 04:23:44
-                'total_time' => 40667,  // 11:16:08
+                'total_time' => 40568,  // 11:16:08
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1409,7 +1409,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 8836,   // 02:27:16
                 't2_time'    => 254,    // 00:04:14
                 'run_time'   => 6073,   // 01:41:13
-                'total_time' => 17714,  // 04:56:16
+                'total_time' => 17776,  // 04:56:16
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1421,7 +1421,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 8518,   // 02:21:58
                 't2_time'    => 231,    // 00:03:51
                 'run_time'   => 6277,   // 01:44:37
-                'total_time' => 17455,  // 04:51:40
+                'total_time' => 17500,  // 04:51:40
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1433,7 +1433,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10354,  // 02:52:34
                 't2_time'    => 207,    // 00:03:27
                 'run_time'   => 6189,   // 01:43:09
-                'total_time' => 19195,  // 05:22:06
+                'total_time' => 19326,  // 05:22:06
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1444,8 +1444,8 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 327,    // 00:05:27
                 'bike_time'  => 9469,   // 02:37:49
                 't2_time'    => 216,    // 00:03:36
-                'run_time'   => 6531,   // 01:41:51
-                'total_time' => 18703,  // 05:04:41
+                'run_time'   => 6111,   // 01:41:51
+                'total_time' => 18281,  // 05:04:41
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1457,7 +1457,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 19721,  // 05:28:41
                 't2_time'    => 426,    // 00:07:06
                 'run_time'   => 15289,  // 04:14:49
-                'total_time' => 40324,  // 11:13:43
+                'total_time' => 40423,  // 11:13:43
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1469,7 +1469,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9220,   // 02:33:40
                 't2_time'    => 232,    // 00:03:52
                 'run_time'   => 6437,   // 01:47:17
-                'total_time' => 18463,  // 05:07:26
+                'total_time' => 18446,  // 05:07:26
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1481,7 +1481,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 19873,  // 05:31:13
                 't2_time'    => 492,    // 00:08:12
                 'run_time'   => 20576,  // 05:42:56
-                'total_time' => 40646,  // 12:45:46
+                'total_time' => 45946,  // 12:45:46
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1493,7 +1493,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11716,  // 03:15:16
                 't2_time'    => 306,    // 00:05:06
                 'run_time'   => 7153,   // 01:59:13
-                'total_time' => 22010,  // 06:11:20
+                'total_time' => 22280,  // 06:11:20
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1505,7 +1505,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 8783,   // 02:26:23
                 't2_time'    => 381,    // 00:06:21
                 'run_time'   => 6981,   // 01:56:21
-                'total_time' => 19622,  // 05:27:39
+                'total_time' => 19659,  // 05:27:39
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1514,10 +1514,10 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman',
                 'swim_time'  => 4660,   // 01:17:40
                 't1_time'    => 406,    // 00:06:46
-                'bike_time'  => 20584,  // 05:41:24
+                'bike_time'  => 20484,  // 05:41:24
                 't2_time'    => 406,    // 00:06:46
                 'run_time'   => 17827,  // 04:57:07
-                'total_time' => 43883,  // 12:16:09
+                'total_time' => 44169,  // 12:16:09
             ],
             [
                 'external_id' => 'parkhomovskiy_aleksandr',
@@ -1529,7 +1529,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9986,   // 02:46:26
                 't2_time'    => 517,    // 00:08:37
                 'run_time'   => 9730,   // 02:42:10
-                'total_time' => 23691,  // 06:37:26
+                'total_time' => 23846,  // 06:37:26
             ],
             [
                 'external_id' => 'abilov_kamran',
@@ -1541,7 +1541,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 26591,  // 07:23:11
                 't2_time'    => 626,    // 00:10:26
                 'run_time'   => 23244,  // 06:27:24
-                'total_time' => 55505,  // 15:26:43
+                'total_time' => 55603,  // 15:26:43
             ],
             [
                 'external_id' => 'orujova_rabiya',
@@ -1601,7 +1601,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 26459,  // 07:20:59
                 't2_time'    => 593,    // 09:53
                 'run_time'   => 19384,  // 05:23:04
-                'total_time' => 53419,  // 14:51:57
+                'total_time' => 53517,  // 14:51:57
             ],
             [
                 'external_id' => 'guliyev_khalid',
@@ -1613,7 +1613,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 4462,   // 01:14:22
                 't2_time'    => 343,    // 05:43
                 'run_time'   => 3994,   // 01:06:34
-                'total_time' => 11363,  // 03:09:21
+                'total_time' => 11361,  // 03:09:21
             ],
             [
                 'external_id' => 'aliyev_hashim',
@@ -1637,7 +1637,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 19690,  // 05:28:10
                 't2_time'    => 464,    // 07:44
                 'run_time'   => 15147,  // 04:12:27
-                'total_time' => 41485,  // 11:31:23
+                'total_time' => 41483,  // 11:31:23
             ],
             [
                 'external_id' => 'novruzov_altun',
@@ -1649,7 +1649,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9096,   // 02:31:36
                 't2_time'    => 203,    // 03:23
                 'run_time'   => 6539,   // 01:48:59
-                'total_time' => 18885,  // 05:14:44
+                'total_time' => 18884,  // 05:14:44
             ],
             [
                 'external_id' => 'novruzov_altun',
@@ -1661,7 +1661,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9203,   // 02:33:23
                 't2_time'    => 172,    // 02:52
                 'run_time'   => 6487,   // 01:48:07
-                'total_time' => 18611,  // 05:10:10
+                'total_time' => 18610,  // 05:10:10
             ],
             [
                 'external_id' => 'novruzov_altun',
@@ -1685,7 +1685,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 27170,  // 07:32:50
                 't2_time'    => 430,    // 07:10
                 'run_time'   => 18172,  // 05:02:52
-                'total_time' => 52640,  // 14:37:18
+                'total_time' => 52638,  // 14:37:18
             ],
             [
                 'external_id' => 'suleymanova_adila',
@@ -1697,7 +1697,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 13864,  // 03:51:04
                 't2_time'    => 371,    // 06:11
                 'run_time'   => 8718,   // 02:25:18
-                'total_time' => 26891,  // 07:26:32
+                'total_time' => 26792,  // 07:26:32
             ],
             [
                 'external_id' => 'abasov_sergan',
@@ -1706,10 +1706,10 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 2697,   // 00:44:57
                 't1_time'    => 490,    // 08:10
-                'bike_time'  => 9460,   // 02:37:20
+                'bike_time'  => 9440,   // 02:37:20
                 't2_time'    => 283,    // 04:43
                 'run_time'   => 7423,   // 02:03:43
-                'total_time' => 20353,  // 05:38:53
+                'total_time' => 20333,  // 05:38:53
             ],
             [
                 'external_id' => 'abasov_sergan',
@@ -1718,10 +1718,10 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman',
                 'swim_time'  => 5245,   // 01:27:25
                 't1_time'    => 389,    // 06:29
-                'bike_time'  => 20565,  // 05:43:45
+                'bike_time'  => 20625,  // 05:43:45
                 't2_time'    => 570,    // 09:30
-                'run_time'   => 17455,  // 04:51:55
-                'total_time' => 43824,  // 12:19:05
+                'run_time'   => 17515,  // 04:51:55
+                'total_time' => 44345,  // 12:19:05
             ],
             [
                 'external_id' => 'abasov_sergan',
@@ -1730,10 +1730,10 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 2522,   // 00:42:02
                 't1_time'    => 338,    // 05:38
-                'bike_time'  => 10088,  // 02:48:48
+                'bike_time'  => 10128,  // 02:48:48
                 't2_time'    => 285,    // 04:45
                 'run_time'   => 8427,   // 02:20:27
-                'total_time' => 21660,  // 06:01:41
+                'total_time' => 21701,  // 06:01:41
             ],
             [
                 'external_id' => 'burlov_sergey',
@@ -1754,10 +1754,10 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 2146,   // 00:35:46
                 't1_time'    => 435,    // 07:15
-                'bike_time'  => 12780,  // 03:31:20
+                'bike_time'  => 12680,  // 03:31:20
                 't2_time'    => 301,    // 05:01
                 'run_time'   => 7296,   // 02:01:36
-                'total_time' => 21658,  // 06:20:56
+                'total_time' => 22856,  // 06:20:56
             ],
             [
                 'external_id' => 'yagizarov_ahmad',
@@ -1769,7 +1769,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11771,  // 03:16:11
                 't2_time'    => 501,    // 08:21
                 'run_time'   => 7755,   // 02:09:15
-                'total_time' => 22639,  // 06:18:59
+                'total_time' => 22739,  // 06:18:59
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1781,7 +1781,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 23297,  // 06:28:17
                 't2_time'    => 609,    // 10:09
                 'run_time'   => 22620,  // 06:17:00
-                'total_time' => 51343,  // 14:15:41
+                'total_time' => 51341,  // 14:15:41
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1793,7 +1793,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9566,   // 02:39:26
                 't2_time'    => 210,    // 03:30
                 'run_time'   => 6932,   // 01:55:32
-                'total_time' => 18972,  // 05:15:30
+                'total_time' => 18930,  // 05:15:30
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1805,7 +1805,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11646,  // 03:14:06
                 't2_time'    => 238,    // 03:58
                 'run_time'   => 7916,   // 02:11:56
-                'total_time' => 22393,  // 06:16:32
+                'total_time' => 22592,  // 06:16:32
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1817,7 +1817,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 20765,  // 05:46:05
                 't2_time'    => 437,    // 07:17
                 'run_time'   => 16289,  // 04:31:29
-                'total_time' => 42586,  // 11:48:08
+                'total_time' => 42488,  // 11:48:08
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1829,7 +1829,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9267,   // 02:34:27
                 't2_time'    => 234,    // 03:54
                 'run_time'   => 7415,   // 02:03:35
-                'total_time' => 19395,  // 05:23:49
+                'total_time' => 19429,  // 05:23:49
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1841,7 +1841,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 8851,   // 02:27:31
                 't2_time'    => 359,    // 05:59
                 'run_time'   => 7310,   // 02:01:50
-                'total_time' => 20042,  // 05:17:19
+                'total_time' => 19039,  // 05:17:19
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1853,7 +1853,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 18520,  // 05:08:40
                 't2_time'    => 416,    // 06:56
                 'run_time'   => 16098,  // 04:28:18
-                'total_time' => 39429,  // 10:57:06
+                'total_time' => 39426,  // 10:57:06
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1865,7 +1865,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9546,   // 02:39:06
                 't2_time'    => 149,    // 02:29
                 'run_time'   => 8206,   // 02:16:46
-                'total_time' => 20399,  // 05:39:00
+                'total_time' => 20340,  // 05:39:00
             ],
             [
                 'external_id' => 'karimov_aydin',
@@ -1889,7 +1889,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 4800,   // 01:20:00
                 't2_time'    => 300,    // 05:00
                 'run_time'   => 4800,   // 01:20:00
-                'total_time' => 12107,  // 03:20:07
+                'total_time' => 12007,  // 03:20:07
             ],
             [
                 'external_id' => 'bunyadov_ali',
@@ -1901,7 +1901,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9427,   // 02:37:07
                 't2_time'    => 161,    // 02:41
                 'run_time'   => 6403,   // 01:46:43
-                'total_time' => 18553,  // 05:10:53
+                'total_time' => 18653,  // 05:10:53
             ],
             [
                 'external_id' => 'bunyadov_ali',
@@ -1913,7 +1913,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9457,   // 02:37:37
                 't2_time'    => 125,    // 02:05
                 'run_time'   => 6842,   // 01:54:02
-                'total_time' => 19089,  // 05:16:29
+                'total_time' => 18989,  // 05:16:29
             ],
             [
                 'external_id' => 'bunyadov_ali',
@@ -1925,7 +1925,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9547,   // 02:39:07
                 't2_time'    => 135,    // 02:15
                 'run_time'   => 6680,   // 01:51:20
-                'total_time' => 18761,  // 05:11:02
+                'total_time' => 18662,  // 05:11:02
             ],
             [
                 'external_id' => 'bunyadov_ali',
@@ -1934,10 +1934,10 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 2245,   // 00:37:25
                 't1_time'    => 206,    // 03:26
-                'bike_time'  => 7183,   // 02:19:43
+                'bike_time'  => 8383,   // 02:19:43
                 't2_time'    => 170,    // 02:50
                 'run_time'   => 6365,   // 01:46:05
-                'total_time' => 16169,  // 04:49:28
+                'total_time' => 17368,  // 04:49:28
             ],
             [
                 'external_id' => 'bunyadov_ali',
@@ -1949,7 +1949,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11351,  // 03:09:11
                 't2_time'    => 177,    // 02:57
                 'run_time'   => 6680,   // 01:51:20
-                'total_time' => 20592,  // 05:44:50
+                'total_time' => 20690,  // 05:44:50
             ],
             [
                 'external_id' => 'bunyadov_ali',
@@ -1961,7 +1961,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 19146,  // 05:19:06
                 't2_time'    => 160,    // 02:40
                 'run_time'   => 14023,  // 03:53:43
-                'total_time' => 37793,  // 10:28:13
+                'total_time' => 37693,  // 10:28:13
             ],
             [
                 'external_id' => 'bunyadov_ali',
@@ -1985,19 +1985,19 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11894,  // 03:18:14
                 't2_time'    => 171,    // 02:51
                 'run_time'   => 6715,   // 01:51:55
-                'total_time' => 21036,  // 05:57:16
+                'total_time' => 21436,  // 05:57:16
             ],
             [
                 'external_id' => 'bunyadov_ali',
                 'race_date' => '2018-10-28',
                 'location' => 'Turkey',
                 'race_type' => 'ironman_70_3',
-                'swim_time'  => 2369,   // 00:46:03
+                'swim_time'  => 2763,   // 00:46:03
                 't1_time'    => 373,    // 06:13
                 'bike_time'  => 10335,  // 02:52:15
                 't2_time'    => 368,    // 06:08
                 'run_time'   => 7875,   // 02:11:15
-                'total_time' => 19220,  // 06:01:54
+                'total_time' => 21714,  // 06:01:54
             ],
             [
                 'external_id' => 'zulfigarov_rasim',
@@ -2009,7 +2009,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 14238,  // 03:57:18
                 't2_time'    => 355,    // 05:55
                 'run_time'   => 10433,  // 02:53:53
-                'total_time' => 25027,  // 06:57:04
+                'total_time' => 25024,  // 06:57:04
             ],
             [
                 'external_id' => 'karimov_balaheydar',
@@ -2021,7 +2021,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11402,  // 03:10:02
                 't2_time'    => 403,    // 06:43
                 'run_time'   => 9033,   // 02:30:33
-                'total_time' => 23996,  // 06:39:54
+                'total_time' => 23994,  // 06:39:54
             ],
             [
                 'external_id' => 'suleymanov_celal',
@@ -2033,7 +2033,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9697,   // 02:41:37
                 't2_time'    => 331,    // 05:31
                 'run_time'   => 6111,   // 01:41:51
-                'total_time' => 19256,  // 05:20:54
+                'total_time' => 19254,  // 05:20:54
             ],
             [
                 'external_id' => 'hajibayov_jalal',
@@ -2045,7 +2045,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9570,   // 02:39:30
                 't2_time'    => 318,    // 05:18
                 'run_time'   => 6463,   // 01:47:43
-                'total_time' => 19333,  // 05:22:11
+                'total_time' => 19331,  // 05:22:11
             ],
             [
                 'external_id' => 'karimov_firdovsi',
@@ -2056,8 +2056,8 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 668,    // 11:08
                 'bike_time'  => 24095,  // 06:41:35
                 't2_time'    => 727,    // 12:07
-                'run_time'   => 24043,  // 06:44:03
-                'total_time' => 50513,  // 14:03:33
+                'run_time'   => 24243,  // 06:44:03
+                'total_time' => 50613,  // 14:03:33
             ],
             [
                 'external_id' => 'karimov_firdovsi',
@@ -2069,7 +2069,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 24989,  // 06:56:29
                 't2_time'    => 671,    // 11:11
                 'run_time'   => 23402,  // 06:30:02
-                'total_time' => 54986,  // 15:14:47
+                'total_time' => 54887,  // 15:14:47
             ],
             [
                 'external_id' => 'karimov_firdovsi',
@@ -2081,7 +2081,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 20847,  // 05:47:27
                 't2_time'    => 522,    // 08:42
                 'run_time'   => 16139,  // 04:28:59
-                'total_time' => 42711,  // 11:53:32
+                'total_time' => 42812,  // 11:53:32
             ],
             [
                 'external_id' => 'karimov_firdovsi',
@@ -2093,7 +2093,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10845,  // 03:00:45
                 't2_time'    => 301,    // 05:01
                 'run_time'   => 7910,   // 02:11:50
-                'total_time' => 21742,  // 06:05:42
+                'total_time' => 21942,  // 06:05:42
             ],
             [
                 'external_id' => 'karimov_firdovsi',
@@ -2105,7 +2105,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11005,  // 03:03:25
                 't2_time'    => 430,    // 07:10
                 'run_time'   => 9127,   // 02:32:07
-                'total_time' => 23381,  // 06:39:41
+                'total_time' => 23981,  // 06:39:41
             ],
             [
                 'external_id' => 'karimov_firdovsi',
@@ -2117,7 +2117,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 23569,  // 06:32:49
                 't2_time'    => 947,    // 15:47
                 'run_time'   => 21113,  // 05:51:53
-                'total_time' => 51588,  // 14:33:08
+                'total_time' => 52388,  // 14:33:08
             ],
             [
                 'external_id' => 'karimov_firdovsi',
@@ -2129,7 +2129,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11034,  // 03:03:54
                 't2_time'    => 413,    // 06:53
                 'run_time'   => 7933,   // 02:12:13
-                'total_time' => 22330,  // 06:15:30
+                'total_time' => 22530,  // 06:15:30
             ],
             [
                 'external_id' => 'garashova_gulshan',
@@ -2152,8 +2152,8 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 233,    // 03:53
                 'bike_time'  => 9405,   // 02:36:45
                 't2_time'    => 220,    // 03:40
-                'run_time'   => 3922,   // 02:05:22
-                'total_time' => 19306,  // 05:21:48
+                'run_time'   => 7522,   // 02:05:22
+                'total_time' => 19308,  // 05:21:48
             ],
             [
                 'external_id' => 'alakbarov_tamerlan',
@@ -2164,8 +2164,8 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 363,    // 06:03
                 'bike_time'  => 10188,  // 02:49:48
                 't2_time'    => 148,    // 02:28
-                'run_time'   => 7889,   // 02:04:49
-                'total_time' => 20009,  // 05:33:31
+                'run_time'   => 7489,   // 02:04:49
+                'total_time' => 20011,  // 05:33:31
             ],
             [
                 'external_id' => 'mirtagavi_azar',
@@ -2174,10 +2174,10 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 2502,   // 00:41:42
                 't1_time'    => 471,    // 07:51
-                'bike_time'  => 11518,  // 03:11:38
+                'bike_time'  => 11498,  // 03:11:38
                 't2_time'    => 355,    // 05:55
                 'run_time'   => 8599,   // 02:23:19
-                'total_time' => 23445,  // 06:30:26
+                'total_time' => 23426,  // 06:30:26
             ],
             [
                 'external_id' => 'salahov_vuqar',
@@ -2189,7 +2189,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 20048,  // 05:34:08
                 't2_time'    => 459,    // 07:39
                 'run_time'   => 17539,  // 04:52:19
-                'total_time' => 44885,  // 12:28:47
+                'total_time' => 44927,  // 12:28:47
             ],
             [
                 'external_id' => 'safarov_sabuhi',
@@ -2201,7 +2201,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 21645,  // 06:00:45
                 't2_time'    => 317,    // 05:17
                 'run_time'   => 14666,  // 04:04:26
-                'total_time' => 43115,  // 11:58:36
+                'total_time' => 43116,  // 11:58:36
             ],
             [
                 'external_id' => 'safarov_sabuhi',
@@ -2213,7 +2213,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9166,   // 02:32:46
                 't2_time'    => 173,    // 02:53
                 'run_time'   => 7072,   // 01:57:52
-                'total_time' => 19262,  // 05:21:01
+                'total_time' => 19261,  // 05:21:01
             ],
             [
                 'external_id' => 'safarov_sabuhi',
@@ -2249,7 +2249,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9621,   // 02:40:21
                 't2_time'    => 381,    // 06:21
                 'run_time'   => 6769,   // 01:52:49
-                'total_time' => 19514,  // 05:25:00
+                'total_time' => 19500,  // 05:25:00
             ],
             [
                 'external_id' => 'mamedov_ilgam',
@@ -2261,7 +2261,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 19544,  // 05:25:44
                 't2_time'    => 492,    // 08:12
                 'run_time'   => 17413,  // 04:50:13
-                'total_time' => 42596,  // 11:48:16
+                'total_time' => 42496,  // 11:48:16
             ],
             [
                 'external_id' => 'gasim_farid',
@@ -2285,7 +2285,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9609,   // 02:40:09
                 't2_time'    => 194,    // 03:14
                 'run_time'   => 5840,   // 01:37:20 ?? (5:43:40 seems off for run, total matches bike+swim+t1+t2+run?)
-                'total_time' => 20511,  // 05:43:40
+                'total_time' => 20620,  // 05:43:40
             ],
             [
                 'external_id' => 'gasim_farid',
@@ -2297,7 +2297,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10765,  // 02:59:25
                 't2_time'    => 553,    // 09:13
                 'run_time'   => 11375,  // 03:09:35
-                'total_time' => 25903,  // 07:13:23
+                'total_time' => 26003,  // 07:13:23
             ],
                                                                                     
             [
@@ -2334,7 +2334,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 12281,  // 03:24:41
                 't2_time'    => 295,    // 04:55
                 'run_time'   => 8452,   // 02:20:52
-                'total_time' => 24314,  // 06:46:54
+                'total_time' => 24414,  // 06:46:54
             ],
             [
                 'external_id' => 'najafov_boris',
@@ -2346,7 +2346,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 8511,   // 02:21:51
                 't2_time'    => 223,    // 03:43
                 'run_time'   => 7051,   // 01:57:31
-                'total_time' => 15966,  // 04:59:25
+                'total_time' => 17965,  // 04:59:25
             ],
             [
                 'external_id' => 'najafov_boris',
@@ -2370,7 +2370,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9813,   // 02:43:33
                 't2_time'    => 193,    // 03:13
                 'run_time'   => 7738,   // 02:08:58
-                'total_time' => 20471,  // 05:34:30
+                'total_time' => 20070,  // 05:34:30
             ],
             [
                 'external_id' => 'najafov_boris',
@@ -2393,8 +2393,8 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 232,    // 03:52
                 'bike_time'  => 9377,   // 02:36:17
                 't2_time'    => 221,    // 03:41
-                'run_time'   => 6420,   // 01:55:00
-                'total_time' => 18497,  // 05:14:37
+                'run_time'   => 6900,   // 01:55:00
+                'total_time' => 18877,  // 05:14:37
             ],
             [
                 'external_id' => 'najafov_boris',
@@ -2402,11 +2402,11 @@ class RaceResultsSeeder extends Seeder
                 'location' => 'Dubai',
                 'race_type' => 'ironman_70_3',
                 'swim_time'  => 2082,   // 00:34:42
-                't1_time'    => 278,    // 04:40
+                't1_time'    => 280,    // 04:40
                 'bike_time'  => 9852,   // 02:44:12
                 't2_time'    => 338,    // 05:38
                 'run_time'   => 7519,   // 02:05:19
-                'total_time' => 20069,  // 05:34:31
+                'total_time' => 20071,  // 05:34:31
             ],
             [
                 'external_id' => 'najafov_boris',
@@ -2478,7 +2478,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10364,  // 02:52:44
                 't2_time'    => 348,    // 05:48
                 'run_time'   => 7298,   // 02:01:38
-                'total_time' => 20859,  // 05:47:40
+                'total_time' => 20860,  // 05:47:40
             ],
             [
                 'external_id' => 'gurbanov_isgandar',
@@ -2489,7 +2489,7 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 0,      // 00:00 (not provided)
                 'bike_time'  => 10534,  // 02:55:34
                 't2_time'    => 0,      // 00:00 (not provided)
-                'run_time'   => 12451,  // 03:00:51
+                'run_time'   => 10851,  // 03:00:51
                 'total_time' => 24858,  // 06:54:18
             ],
             [
@@ -2502,7 +2502,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 11467,  // 03:11:07
                 't2_time'    => 527,    // 08:47
                 'run_time'   => 11920,  // 03:18:40
-                'total_time' => 27275,  // 07:34:36
+                'total_time' => 27276,  // 07:34:36
             ],
             [
                 'external_id' => 'abdullayev_jamil',
@@ -2514,7 +2514,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9020,   // 02:30:20
                 't2_time'    => 301,    // 05:01
                 'run_time'   => 8528,   // 02:22:08
-                'total_time' => 20654,  // 05:44:15
+                'total_time' => 20655,  // 05:44:15
             ],
             [
                 'external_id' => 'abdullayev_jamil',
@@ -2526,7 +2526,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 9787,   // 02:43:07
                 't2_time'    => 282,    // 04:42
                 'run_time'   => 9007,   // 02:30:07
-                'total_time' => 19919,  // 06:05:19
+                'total_time' => 21919,  // 06:05:19
             ],
             [
                 'external_id' => 'nuriyev_ziya',
@@ -2538,7 +2538,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 24060,  // 06:41:00
                 't2_time'    => 729,    // 12:09
                 'run_time'   => 21380,  // 05:56:20
-                'total_time' => 51942,  // 14:25:40
+                'total_time' => 51940,  // 14:25:40
             ],
             [
                 'external_id' => 'novruzov_farrukh',
@@ -2549,8 +2549,8 @@ class RaceResultsSeeder extends Seeder
                 't1_time'    => 651,    // 10:51
                 'bike_time'  => 26364,  // 07:19:24
                 't2_time'    => 553,    // 09:13
-                'run_time'   => 20145,  // 05:36:45
-                'total_time' => 53300,  // 14:49:18
+                'run_time'   => 20205,  // 05:36:45
+                'total_time' => 53358,  // 14:49:18
             ],
             [
                 'external_id' => 'bayramov_yahya',
@@ -2562,7 +2562,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 23283,  // 06:28:03
                 't2_time'    => 447,    // 07:27
                 'run_time'   => 17223,  // 04:47:03
-                'total_time' => 48380,  // 13:26:12
+                'total_time' => 48372,  // 13:26:12
             ],
             [
                 'external_id' => 'bayramov_yahya',
@@ -2574,7 +2574,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10125,  // 02:48:45
                 't2_time'    => 229,    // 03:49
                 'run_time'   => 6954,   // 01:55:54
-                'total_time' => 20505,  // 05:46:45
+                'total_time' => 20805,  // 05:46:45
             ],
             [
                 'external_id' => 'rotkin_timur',
@@ -2586,7 +2586,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 12663,  // 03:31:03
                 't2_time'    => 382,    // 06:22
                 'run_time'   => 7988,   // 02:13:08
-                'total_time' => 23992,  // 06:38:12
+                'total_time' => 23892,  // 06:38:12
             ],
             [
                 'external_id' => 'ziyadov_gadzhiverdi',
@@ -2598,7 +2598,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 12254,  // 03:24:14
                 't2_time'    => 307,    // 05:07
                 'run_time'   => 12615,  // 03:30:15
-                'total_time' => 27703,  // 07:43:22
+                'total_time' => 27802,  // 07:43:22
             ],
             [
                 'external_id' => 'safarov_javid',
@@ -2610,7 +2610,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10391,  // 02:53:11
                 't2_time'    => 208,    // 03:28
                 'run_time'   => 7422,   // 02:03:42
-                'total_time' => 20836,  // 05:48:16
+                'total_time' => 20896,  // 05:48:16
             ],
             [
                 'external_id' => 'gadzhibekov_dzhalal',
@@ -2679,10 +2679,10 @@ class RaceResultsSeeder extends Seeder
                 'race_type' => 'ironman',
                 'swim_time'  => 5665,   // 01:34:25
                 't1_time'    => 925,    // 15:25
-                'bike_time'  => 21966,  // 06:06:46
+                'bike_time'  => 22006,  // 06:06:46
                 't2_time'    => 447,    // 07:27
                 'run_time'   => 15261,  // 04:14:21
-                'total_time' => 44264,  // 12:18:35
+                'total_time' => 44315,  // 12:18:35
             ],
             [
                 'external_id' => 'garajayev_hamid',
@@ -2694,7 +2694,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 10549,  // 02:55:49
                 't2_time'    => 239,    // 03:59
                 'run_time'   => 8296,   // 02:18:16
-                'total_time' => 22075,  // 06:07:35
+                'total_time' => 22055,  // 06:07:35
             ],
             [
                 'external_id' => 'melikzade_fuad',
@@ -2730,7 +2730,7 @@ class RaceResultsSeeder extends Seeder
                 'bike_time'  => 12694,  // 03:31:34
                 't2_time'    => 213,    // 03:33
                 'run_time'   => 7130,   // 01:58:50
-                'total_time' => 15888,  // 06:34:48
+                'total_time' => 23688,  // 06:34:48
             ],
             [
                 'external_id' => 'aliyeva_fatima',
