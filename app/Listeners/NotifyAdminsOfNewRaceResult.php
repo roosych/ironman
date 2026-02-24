@@ -20,6 +20,8 @@ class NotifyAdminsOfNewRaceResult implements ShouldQueue
         $raceResult = $event->raceResult;
         $raceResult->load(['profile.user']);
 
+        // The hide_reviewer global scope intentionally excludes reviewer accounts.
+        // This is correct behaviour: reviewer accounts should not receive admin emails.
         $admins = User::where('is_admin', true)->get();
 
         if ($admins->isEmpty()) {

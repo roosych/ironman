@@ -152,7 +152,7 @@ class ResultTransferController extends Controller
             $lang = trim(explode(';', $language)[0]);
             $lang = explode('-', $lang)[0]; // Get language part without country
 
-            if (in_array($lang, ['ru', 'en'], true)) {
+            if (in_array($lang, ['ru', 'en', 'az'], true)) {
                 return $lang;
             }
         }

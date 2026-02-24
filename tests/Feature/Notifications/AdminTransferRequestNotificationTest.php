@@ -63,4 +63,22 @@ class AdminTransferRequestNotificationTest extends TestCase
         Notification::assertSentTo($admin, NewTransferRequestSubmittedNotification::class);
         Notification::assertNotSentTo($athlete, NewTransferRequestSubmittedNotification::class);
     }
+
+    public function test_no_notification_sent_when_no_admins_exist(): void
+    {
+        Notification::fake();
+
+        $athlete = User::factory()->create(['is_admin' => false]);
+        UserProfile::factory()->create(['user_id' => $athlete->id]);
+        $sourceProfile = UserProfile::factory()->create(['user_id' => null, 'results_transferred' => false]);
+        $token = $athlete->createToken('auth_token')->plainTextToken;
+
+        $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->postJson('/api/v1/transfer/request', [
+                'source_athlete_id' => $sourceProfile->id,
+            ])
+            ->assertCreated();
+
+        Notification::assertNothingSent();
+    }
 }
