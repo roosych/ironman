@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\TransferRequestCreated;
 use App\Http\Controllers\Controller;
 use App\Models\UserProfile;
 use App\Services\ResultTransferService;
@@ -66,6 +67,8 @@ class ResultTransferController extends Controller
                 $request->user(),
                 (int) $request->input('source_athlete_id')
             );
+
+            event(new TransferRequestCreated($transferRequest));
 
             return $this->successResponse([
                 'message' => $this->trans($request, 'api.transfer.request_created'),
