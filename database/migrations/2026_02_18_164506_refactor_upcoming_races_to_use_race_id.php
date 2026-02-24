@@ -12,24 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('upcoming_races', function (Blueprint $table) {
-            // Add race_id column only if it doesn't exist
+            // Add race_id column with foreign key only if it doesn't exist
             if (!Schema::hasColumn('upcoming_races', 'race_id')) {
                 $table->foreignId('race_id')
                     ->constrained('races')
                     ->cascadeOnDelete();
             }
         });
-
-        // Add foreign key constraint if it doesn't exist
-        if (Schema::hasColumn('upcoming_races', 'race_id')) {
-            Schema::table('upcoming_races', function (Blueprint $table) {
-                // Check if foreign key doesn't already exist
-                $table->foreign('race_id')
-                    ->references('id')
-                    ->on('races')
-                    ->cascadeOnDelete();
-            });
-        }
 
         Schema::table('upcoming_races', function (Blueprint $table) {
             // Add unique index for user_profile_id and race_id combination
