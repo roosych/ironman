@@ -70,7 +70,7 @@ class AdminTransferRequestNotificationTest extends TestCase
 
         $athlete = User::factory()->create(['is_admin' => false]);
         UserProfile::factory()->create(['user_id' => $athlete->id]);
-        $sourceProfile = UserProfile::factory()->create(['user_id' => null, 'results_transferred' => false]);
+        $sourceProfile = UserProfile::factory()->create(['user_id' => null, 'role' => 'athlete', 'results_transferred' => false]);
         $token = $athlete->createToken('auth_token')->plainTextToken;
 
         $this->withHeader('Authorization', 'Bearer ' . $token)

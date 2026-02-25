@@ -67,6 +67,7 @@ class PasswordResetTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'new_password123',
             'password_confirmation' => 'new_password123',
+            'locale' => 'ru',
         ]);
 
         $response->assertOk()

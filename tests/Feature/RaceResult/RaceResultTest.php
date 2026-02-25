@@ -88,7 +88,7 @@ class RaceResultTest extends TestCase
 
     public function test_authenticated_user_can_create_race_result(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['locale' => 'ru']);
         $profile = UserProfile::factory()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -206,7 +206,7 @@ class RaceResultTest extends TestCase
 
     public function test_user_can_delete_own_race_result(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['locale' => 'ru']);
         $profile = UserProfile::factory()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
         $result = RaceResult::factory()->create(['user_profile_id' => $profile->id]);

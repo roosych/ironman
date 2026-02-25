@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\UpcomingRace;
 
+use App\Models\Race;
 use App\Models\UpcomingRace;
 use App\Models\User;
 use App\Models\UserPhoto;
@@ -53,7 +54,6 @@ class UpcomingRaceTest extends TestCase
 
         UpcomingRace::factory()->create([
             'user_profile_id' => $profile->id,
-            'race_date' => now()->addMonth(),
         ]);
         UpcomingRace::factory()->past()->create([
             'user_profile_id' => $profile->id,
@@ -71,7 +71,6 @@ class UpcomingRaceTest extends TestCase
 
         UpcomingRace::factory()->create([
             'user_profile_id' => $profile->id,
-            'race_date' => now()->addMonth(),
         ]);
         UpcomingRace::factory()->past()->create([
             'user_profile_id' => $profile->id,
@@ -136,15 +135,15 @@ class UpcomingRaceTest extends TestCase
 
         UpcomingRace::factory()->create([
             'user_profile_id' => $profile->id,
-            'race_date' => now()->addMonths(3),
+            'race_id' => Race::factory()->create(['date' => now()->addMonths(3)])->id,
         ]);
         UpcomingRace::factory()->create([
             'user_profile_id' => $profile->id,
-            'race_date' => now()->addMonth(),
+            'race_id' => Race::factory()->create(['date' => now()->addMonth()])->id,
         ]);
         UpcomingRace::factory()->create([
             'user_profile_id' => $profile->id,
-            'race_date' => now()->addMonths(2),
+            'race_id' => Race::factory()->create(['date' => now()->addMonths(2)])->id,
         ]);
 
         $response = $this->getJson('/api/v1/upcoming-races');
@@ -174,15 +173,13 @@ class UpcomingRaceTest extends TestCase
         $user = User::factory()->create();
         $profile = UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
-
-        $data = [
-            'race_type' => 'ironman',
+        $race = Race::factory()->ironman()->create([
             'location' => 'Hamburg, Germany',
-            'race_date' => now()->addMonths(6)->toDateString(),
-        ];
+            'date' => now()->addMonths(6)->toDateString(),
+        ]);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/v1/upcoming-races', $data);
+            ->postJson('/api/v1/upcoming-races', ['race_id' => $race->id]);
 
         $response->assertStatus(201)
             ->assertJsonPath('success', true)
@@ -192,8 +189,7 @@ class UpcomingRaceTest extends TestCase
 
         $this->assertDatabaseHas('upcoming_races', [
             'user_profile_id' => $profile->id,
-            'race_type' => 'ironman',
-            'location' => 'Hamburg, Germany',
+            'race_id' => $race->id,
         ]);
     }
 
@@ -214,82 +210,70 @@ class UpcomingRaceTest extends TestCase
     {
         $user = User::factory()->create();
         $token = $user->createToken('auth_token')->plainTextToken;
-
-        $data = [
-            'race_type' => 'ironman',
-            'location' => 'Hamburg, Germany',
-            'race_date' => now()->addMonths(6)->toDateString(),
-        ];
+        $race = Race::factory()->create();
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/v1/upcoming-races', $data);
+            ->postJson('/api/v1/upcoming-races', ['race_id' => $race->id]);
 
         $response->assertStatus(403);
     }
 
-    public function test_validation_requires_race_type(): void
+    public function test_validation_requires_race_id(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/v1/upcoming-races', [
-                'location' => 'Hamburg',
-                'race_date' => now()->addMonth()->toDateString(),
-            ]);
+            ->postJson('/api/v1/upcoming-races', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['race_type']);
+            ->assertJsonValidationErrors(['race_id']);
     }
 
-    public function test_validation_requires_location(): void
+    public function test_validation_requires_valid_race_id(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/v1/upcoming-races', [
-                'race_type' => 'ironman',
-                'race_date' => now()->addMonth()->toDateString(),
-            ]);
+            ->postJson('/api/v1/upcoming-races', ['race_id' => 99999]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['location']);
+            ->assertJsonValidationErrors(['race_id']);
     }
 
-    public function test_validation_requires_future_date(): void
+    public function test_validation_requires_integer_race_id(): void
     {
         $user = User::factory()->create();
         UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/v1/upcoming-races', [
-                'race_type' => 'ironman',
-                'location' => 'Hamburg',
-                'race_date' => now()->subDay()->toDateString(),
-            ]);
+            ->postJson('/api/v1/upcoming-races', ['race_id' => 'invalid']);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['race_date']);
+            ->assertJsonValidationErrors(['race_id']);
     }
 
-    public function test_validation_rejects_invalid_race_type(): void
+    public function test_validation_rejects_duplicate_race_registration(): void
     {
         $user = User::factory()->create();
-        UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
+        $profile = UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
         $token = $user->createToken('auth_token')->plainTextToken;
+        $race = Race::factory()->create();
 
+        // Register once
+        UpcomingRace::factory()->create([
+            'user_profile_id' => $profile->id,
+            'race_id' => $race->id,
+        ]);
+
+        // Try to register again for same race
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/v1/upcoming-races', [
-                'race_type' => 'invalid',
-                'location' => 'Hamburg',
-                'race_date' => now()->addMonth()->toDateString(),
-            ]);
+            ->postJson('/api/v1/upcoming-races', ['race_id' => $race->id]);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['race_type']);
+        $response->assertStatus(422);
     }
 }

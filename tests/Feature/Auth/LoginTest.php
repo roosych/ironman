@@ -45,6 +45,7 @@ class LoginTest extends TestCase
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'test@example.com',
             'password' => 'wrong_password',
+            'locale' => 'ru',
         ]);
 
         $response->assertStatus(401)
@@ -57,6 +58,7 @@ class LoginTest extends TestCase
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'nonexistent@example.com',
             'password' => 'password123',
+            'locale' => 'ru',
         ]);
 
         $response->assertStatus(401)
@@ -74,7 +76,7 @@ class LoginTest extends TestCase
 
     public function test_user_can_logout(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['locale' => 'ru']);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)

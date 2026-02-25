@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\UpcomingRace;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreUpcomingRaceRequest extends FormRequest
 {
@@ -19,7 +20,14 @@ class StoreUpcomingRaceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'race_id' => ['required', 'integer', 'exists:races,id'],
+            'race_id' => [
+                'required',
+                'integer',
+                'exists:races,id',
+                Rule::unique('upcoming_races')->where(
+                    fn ($query) => $query->where('user_profile_id', $this->user()?->profile?->id)
+                ),
+            ],
         ];
     }
 

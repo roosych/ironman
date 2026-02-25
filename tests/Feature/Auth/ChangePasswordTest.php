@@ -29,7 +29,7 @@ class ChangePasswordTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonPath('message', 'Password updated successfully');
+            ->assertJsonPath('message', 'Password successfully changed.');
 
         // Verify password is actually updated
         $user->refresh();
@@ -53,7 +53,7 @@ class ChangePasswordTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJsonPath('success', false)
-            ->assertJsonPath('message', 'Current password is incorrect');
+            ->assertJsonPath('errors.current_password.0', 'Current password is incorrect.');
 
         // Verify password is not changed
         $user->refresh();

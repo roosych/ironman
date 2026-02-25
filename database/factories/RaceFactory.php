@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\RaceType;
 use App\Models\Race;
-use App\Models\UpcomingRace;
-use App\Models\UserProfile;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<UpcomingRace>
+ * @extends Factory<Race>
  */
-class UpcomingRaceFactory extends Factory
+class RaceFactory extends Factory
 {
-    protected $model = UpcomingRace::class;
+    protected $model = Race::class;
 
     /**
      * @return array<string, mixed>
@@ -22,8 +21,10 @@ class UpcomingRaceFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_profile_id' => UserProfile::factory(),
-            'race_id' => Race::factory(),
+            'type' => $this->faker->randomElement(RaceType::cases()),
+            'location' => $this->faker->city().', '.$this->faker->country(),
+            'date' => $this->faker->dateTimeBetween('+1 month', '+1 year'),
+            'country_iso' => strtoupper($this->faker->countryCode()),
             'is_active' => true,
         ];
     }
@@ -31,28 +32,21 @@ class UpcomingRaceFactory extends Factory
     public function ironman(): static
     {
         return $this->state(fn (array $attributes) => [
-            'race_id' => Race::factory()->ironman(),
+            'type' => RaceType::Ironman,
         ]);
     }
 
     public function ironman703(): static
     {
         return $this->state(fn (array $attributes) => [
-            'race_id' => Race::factory()->ironman703(),
-        ]);
-    }
-
-    public function inactive(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_active' => false,
+            'type' => RaceType::Ironman703,
         ]);
     }
 
     public function past(): static
     {
         return $this->state(fn (array $attributes) => [
-            'race_id' => Race::factory()->past(),
+            'date' => $this->faker->dateTimeBetween('-1 year', '-1 day'),
         ]);
     }
 }

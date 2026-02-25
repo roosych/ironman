@@ -346,7 +346,7 @@ class AthleteTest extends TestCase
     {
         $profile = UserProfile::factory()->athlete()->create();
 
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $profile->id,
             'swim_time' => 4000,
             't1_time' => 300,
@@ -384,7 +384,7 @@ class AthleteTest extends TestCase
         $profile = UserProfile::factory()->athlete()->create();
 
         // First race - slower swim, faster bike
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $profile->id,
             'swim_time' => 5000,
             'bike_time' => 17000,
@@ -393,7 +393,7 @@ class AthleteTest extends TestCase
         ]);
 
         // Second race - faster swim, slower bike
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $profile->id,
             'swim_time' => 4000,
             'bike_time' => 19000,
@@ -439,7 +439,7 @@ class AthleteTest extends TestCase
     {
         $profile = UserProfile::factory()->athlete()->create();
 
-        RaceResult::factory()->ironman()->create([
+        RaceResult::factory()->ironman()->approved()->create([
             'user_profile_id' => $profile->id,
             'swim_time' => 3661, // 1:01:01
         ]);
