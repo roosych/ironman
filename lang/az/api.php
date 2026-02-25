@@ -27,7 +27,6 @@ return [
     ],
     'athlete' => [
         'not_found' => 'Atlet tapılmadı.',
-        'no_photos' => 'Bu atletin fotosu yoxdur.',
     ],
     'policy' => [
         'not_found' => 'Siyasət tapılmadı.',

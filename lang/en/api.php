@@ -27,7 +27,6 @@ return [
     ],
     'athlete' => [
         'not_found' => 'Athlete not found.',
-        'no_photos' => 'No photos found for this athlete.',
     ],
     'policy' => [
         'not_found' => 'Policy not found.',
