@@ -247,13 +247,27 @@ class AthleteController extends Controller
             ->where('results_transferred', false)
             ->first();
 
-        if (!$profile || !$profile->user) {
+        if (!$profile) {
             return $this->errorResponse([
                 'athlete' => [$this->trans($request, 'api.athlete.not_found')],
             ], 404);
         }
 
         $perPage = min(max((int) $request->get('per_page', 15), 1), 50);
+
+        // Donor athletes have no linked user account — return empty photo list
+        if (!$profile->user) {
+            return $this->successResponse([
+                'data' => [],
+                'has_photos' => false,
+                'pagination' => [
+                    'current_page' => 1,
+                    'per_page' => $perPage,
+                    'total' => 0,
+                    'last_page' => 1,
+                ],
+            ]);
+        }
 
         $photos = $profile->user->photos()
             ->orderBy('created_at', 'desc')

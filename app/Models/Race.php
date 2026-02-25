@@ -14,6 +14,7 @@ class Race extends Model
     use HasFactory;
 
     protected $fillable = [
+        'source_id',
         'date',
         'location',
         'type',

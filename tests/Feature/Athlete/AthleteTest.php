@@ -450,4 +450,94 @@ class AthleteTest extends TestCase
             ->assertJsonPath('data.ironman.swim.time', '01:01:01')
             ->assertJsonPath('data.ironman.swim.seconds', 3661);
     }
+
+    // --- Photos endpoint tests ---
+
+    public function test_photos_returns_empty_list_for_donor_athlete_without_user(): void
+    {
+        $profile = UserProfile::factory()->athlete()->withoutUser()->create();
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/photos");
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data', [])
+            ->assertJsonPath('has_photos', false)
+            ->assertJsonPath('pagination.total', 0)
+            ->assertJsonPath('pagination.current_page', 1)
+            ->assertJsonPath('pagination.last_page', 1);
+    }
+
+    public function test_photos_returns_photos_for_athlete_with_user(): void
+    {
+        $user = User::factory()->create();
+        $profile = UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
+        UserPhoto::factory()->count(3)->create(['user_id' => $user->id]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/photos");
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('has_photos', true)
+            ->assertJsonPath('pagination.total', 3)
+            ->assertJsonCount(3, 'data');
+    }
+
+    public function test_photos_returns_empty_list_for_athlete_with_user_but_no_photos(): void
+    {
+        $user = User::factory()->create();
+        $profile = UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/photos");
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data', [])
+            ->assertJsonPath('has_photos', false)
+            ->assertJsonPath('pagination.total', 0);
+    }
+
+    public function test_photos_returns_404_for_non_existent_athlete(): void
+    {
+        $response = $this->getJson('/api/v1/athletes/999/photos');
+
+        $response->assertStatus(404)
+            ->assertJsonPath('success', false);
+    }
+
+    public function test_photos_returns_404_for_non_athlete_profile(): void
+    {
+        $coach = UserProfile::factory()->coach()->create();
+
+        $response = $this->getJson("/api/v1/athletes/{$coach->id}/photos");
+
+        $response->assertStatus(404)
+            ->assertJsonPath('success', false);
+    }
+
+    public function test_photos_returns_404_for_athlete_with_results_transferred(): void
+    {
+        $profile = UserProfile::factory()->athlete()->create([
+            'results_transferred' => true,
+        ]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/photos");
+
+        $response->assertStatus(404)
+            ->assertJsonPath('success', false);
+    }
+
+    public function test_photos_pagination_respects_per_page_param(): void
+    {
+        $user = User::factory()->create();
+        $profile = UserProfile::factory()->athlete()->create(['user_id' => $user->id]);
+        UserPhoto::factory()->count(10)->create(['user_id' => $user->id]);
+
+        $response = $this->getJson("/api/v1/athletes/{$profile->id}/photos?per_page=3");
+
+        $response->assertOk()
+            ->assertJsonPath('pagination.per_page', 3)
+            ->assertJsonPath('pagination.total', 10)
+            ->assertJsonCount(3, 'data');
+    }
 }

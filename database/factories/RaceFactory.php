@@ -21,6 +21,7 @@ class RaceFactory extends Factory
     public function definition(): array
     {
         return [
+            'source_id' => $this->faker->optional(0.5)->numberBetween(10000, 999999),
             'type' => $this->faker->randomElement(RaceType::cases()),
             'location' => $this->faker->city().', '.$this->faker->country(),
             'date' => $this->faker->dateTimeBetween('+1 month', '+1 year'),
