@@ -93,6 +93,7 @@ class Policy extends Model
         return self::ofType($type)
             ->forLanguage($language)
             ->active()
+            ->where('effective_date', '<=', now())
             ->orderByDesc('effective_date')
             ->first();
     }

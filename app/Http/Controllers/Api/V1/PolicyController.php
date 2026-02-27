@@ -109,12 +109,18 @@ class PolicyController extends Controller
      */
     public function types(Request $request): JsonResponse
     {
-        $types = collect(Policy::TYPES)->map(function ($name, $key) {
-            return [
-                'type' => $key,
-                'name' => $name,
-            ];
-        })->values();
+        $activeTypes = Policy::active()
+            ->distinct()
+            ->pluck('type');
+
+        $types = collect(Policy::TYPES)
+            ->only($activeTypes)
+            ->map(function ($name, $key) {
+                return [
+                    'type' => $key,
+                    'name' => $name,
+                ];
+            })->values();
 
         return $this->successResponse([
             'data' => $types,
