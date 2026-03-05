@@ -232,18 +232,10 @@ tmpclaude-*
 nul
 # Временные файлы редакторов
 
-# Личные заметки и планирование (не должны попадать в Git)
-plans.md
-profiles.md
-races.md
-races_api.md
-refactor_*.md
-result_*.md
-results.md
-transfer_*.md
-transfer-*.md
-IMPLEMENTATION_SUMMARY.md
-# Личные заметки разработчиков, временная документация, планы задач
+# Все Markdown файлы (документация, заметки, планы)
+*.md
+*.MD
+# Markdown файлы не публикуются в репозитории
 
 # ============================================
 # ПРИМЕЧАНИЯ
@@ -263,7 +255,7 @@ IMPLEMENTATION_SUMMARY.md
 # - phpunit.xml (конфигурация тестов)
 # - vite.config.js (конфигурация Vite)
 # - artisan (CLI Laravel)
-# - README.md, .gitignore (документация)
+# - .gitignore
 # - .env.example (шаблон окружения)
 # 
 # ФАЙЛЫ, КОТОРЫЕ НЕ ДОЛЖНЫ БЫТЬ В GIT:
